@@ -11,8 +11,8 @@ const NAV_SECTIONS = [
     label: "Principal",
     items: [
       { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", badge: null },
-      { id: "ventas", icon: ShoppingCart, label: "Ventas", badge: "12" },
-      { id: "productos", icon: Package, label: "Productos", badge: "243" },
+      { id: "ventas", icon: ShoppingCart, label: "Ventas", badge: null },
+      { id: "productos", icon: Package, label: "Productos", badge: null },
     ],
   },
   {
@@ -20,7 +20,7 @@ const NAV_SECTIONS = [
     items: [
       { id: "envios", icon: Truck, label: "Envíos", badge: null },
       { id: "precios", icon: DollarSign, label: "Motor de Precios", badge: null },
-      { id: "devoluciones", icon: RefreshCw, label: "Devoluciones", badge: "3", badgeType: "warning" },
+      { id: "devoluciones", icon: RefreshCw, label: "Devoluciones", badge: null },
     ],
   },
   {
@@ -33,7 +33,7 @@ const NAV_SECTIONS = [
   {
     label: "Soporte",
     items: [
-      { id: "atencion", icon: MessageSquare, label: "Atención al Cliente", badge: "5", badgeType: "danger" },
+      { id: "atencion", icon: MessageSquare, label: "Atención al Cliente", badge: null },
       { id: "analytics", icon: BarChart3, label: "Analytics", badge: null },
     ],
   },

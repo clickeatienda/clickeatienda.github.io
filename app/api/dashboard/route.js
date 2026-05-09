@@ -37,10 +37,9 @@ export async function GET() {
   // Fetch recent products
   const { data: products } = await supabase
     .from('products')
-    .select('id, name, category, selling_price, before_price, discount_percent, images, is_active')
-    .eq('is_active', true)
-    .order('published_at', { ascending: false })
-    .limit(5);
+    .select('id, dropi_id, name, category, supplier_cost, selling_price, before_price, discount_percent, images, is_active, stock')
+    .order('created_at', { ascending: false })
+    .limit(50);
 
   // Fetch social queue
   const { data: social } = await supabase
