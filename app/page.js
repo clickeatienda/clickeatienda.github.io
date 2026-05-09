@@ -1,4 +1,5 @@
 "use client";
+// Force Vercel Refresh - Reverting Storefront
 import { useState, useEffect } from "react";
 import { Bell, Menu, RefreshCw, Settings } from "lucide-react";
 import Sidebar from "./components/Sidebar";
