@@ -1,0 +1,39 @@
+# ============================================
+# CLICKEA TIENDA — Price Auto-Adjustment
+# Runs weekly on Mondays at 7:00 AM COL
+# Recalculates prices based on real metrics
+# ============================================
+
+name: "💰 Auto-Adjust Prices"
+
+on:
+  schedule:
+    - cron: '0 12 * * 1'  # Monday 7:00 AM COL
+  workflow_dispatch:
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+  SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+  SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+
+jobs:
+  adjust-prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      
+      - name: "📊 Collect real metrics (returns, cancellations)"
+        run: node scripts/collect-metrics.js
+      
+      - name: "💰 Recalculate all prices"
+        run: node scripts/recalculate-prices.js
+      
+      - name: "📤 Update Shopify prices"
+        run: node scripts/update-shopify-prices.js

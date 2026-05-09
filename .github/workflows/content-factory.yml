@@ -1,0 +1,57 @@
+# ============================================
+# CLICKEA TIENDA — Content Factory
+# Runs every 4 hours (6 times/day)
+# Creates 8 videos per run = 48 videos/day
+# Uses edge-tts (FREE unlimited) + FFmpeg
+# ============================================
+
+name: "🎬 Create & Publish Content"
+
+on:
+  schedule:
+    # Every 4 hours starting at midnight COL (5:00 UTC)
+    - cron: '0 5,9,13,17,21,1 * * *'
+  workflow_dispatch:
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+jobs:
+  create-content:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: "🔧 Install FFmpeg & edge-tts"
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install edge-tts
+
+      - run: npm ci
+
+      - name: "🎤 Generate voiceovers (edge-tts)"
+        run: node scripts/generate-voiceovers.js
+
+      - name: "🎥 Render videos (FFmpeg)"
+        run: node scripts/render-videos.js
+
+      - name: "📤 Upload to Supabase Storage"
+        run: node scripts/upload-content.js
+
+      - name: "📱 Publish to social media"
+        run: node scripts/publish-social.js
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          TIKTOK_ACCESS_TOKEN_1: ${{ secrets.TIKTOK_ACCESS_TOKEN_1 }}
+          TIKTOK_ACCESS_TOKEN_2: ${{ secrets.TIKTOK_ACCESS_TOKEN_2 }}
+          TIKTOK_ACCESS_TOKEN_3: ${{ secrets.TIKTOK_ACCESS_TOKEN_3 }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}

@@ -1,0 +1,44 @@
+# ============================================
+# CLICKEA TIENDA — Daily Product Import
+# Runs at 6:00 AM Colombia time (11:00 UTC)
+# Imports 20 new products from Dropi → Shopify
+# ============================================
+
+name: "📦 Import Products Daily"
+
+on:
+  schedule:
+    - cron: '0 11 * * *'  # 6:00 AM COL
+  workflow_dispatch: # Manual trigger
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+  SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+  SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+
+jobs:
+  import-products:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - run: npm ci
+      
+      - name: "🔍 Select products from Dropi"
+        run: node scripts/select-products.js
+        
+      - name: "💰 Calculate prices"
+        run: node scripts/calculate-prices.js
+
+      - name: "📤 Publish to Shopify"
+        run: node scripts/publish-to-shopify.js
+
+      - name: "📊 Update metrics"
+        run: node scripts/update-metrics.js
