@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Bell, Menu, RefreshCw, Settings } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import DashboardView from "./components/DashboardView";
+import ProductsView from "./components/ProductsView";
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -44,6 +45,8 @@ export default function Home() {
     switch (activeSection) {
       case "dashboard":
         return <DashboardView />;
+      case "productos":
+        return <ProductsView />;
       default:
         return (
           <div className="animate-in">
