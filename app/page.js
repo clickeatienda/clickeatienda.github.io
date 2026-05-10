@@ -45,7 +45,7 @@ export default function Home() {
   const renderView = () => {
     switch (activeSection) {
       case "dashboard":
-        return <DashboardView />;
+        return <DashboardView onNavigate={setActiveSection} />;
       case "productos":
         return <ProductsView />;
       default:

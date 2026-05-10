@@ -57,10 +57,15 @@ export async function GET() {
     .order('created_at', { ascending: false })
     .limit(6);
 
+  // Count real products for "Products Active" stat
+  const { count: realProductsCount } = await supabase
+    .from('products')
+    .select('*', { count: 'exact', head: true });
+
   return NextResponse.json({
     stats: {
       ventasHoy: metrics?.total_orders || 0,
-      productsActive: metrics?.products_active || 0,
+      productsActive: realProductsCount || 0,
       visitasHoy: metrics?.visitors || 0,
       tasaDevolucion: metrics?.return_rate || 0,
       contentPublished: metrics?.content_published || 0,

@@ -8,7 +8,7 @@ import {
 import { SalesChart, ContentChart } from "./Charts";
 import ImportProductModal from "./ImportProductModal";
 
-export default function DashboardView() {
+export default function DashboardView({ onNavigate }) {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [data, setData] = useState({
     stats: {
@@ -37,7 +37,7 @@ export default function DashboardView() {
 
   const statsList = [
     { label: "Ventas Hoy", value: data.stats.ventasHoy, sub: "Últimas 24h", icon: "💰", color: "blue", change: null },
-    { label: "Productos Activos", value: data.stats.productsActive, sub: "En catálogo", icon: "📦", color: "purple", change: null },
+    { label: "Productos Activos", value: data.stats.productsActive, sub: "En catálogo", icon: "📦", color: "purple", change: null, onClick: () => onNavigate('productos') },
     { label: "Visitas Hoy", value: data.stats.visitasHoy, sub: "Únicas", icon: "👁️", color: "green", change: null },
     { label: "Tasa Devolución", value: `${data.stats.tasaDevolucion}%`, sub: "Objetivo: <20%", icon: "🔄", color: "yellow", change: null },
     { label: "Contenido Publicado", value: data.stats.contentPublished, sub: "Total", icon: "📱", color: "blue", change: null },
@@ -58,7 +58,15 @@ export default function DashboardView() {
       {/* Stats Grid */}
       <div className="stats-grid">
         {statsList.map((s, i) => (
-          <div className={`stat-card stagger-${i + 1}`} key={s.label} style={{ "--stat-accent": s.color === "green" ? "var(--success)" : s.color === "yellow" ? "var(--warning)" : s.color === "purple" ? "var(--info)" : "var(--brand-primary)" }}>
+          <div 
+            className={`stat-card stagger-${i + 1}`} 
+            key={s.label} 
+            onClick={() => s.onClick ? s.onClick() : null}
+            style={{ 
+              "--stat-accent": s.color === "green" ? "var(--success)" : s.color === "yellow" ? "var(--warning)" : s.color === "purple" ? "var(--info)" : "var(--brand-primary)",
+              cursor: s.onClick ? 'pointer' : 'default'
+            }}
+          >
             <div className="stat-card-header">
               <div className={`stat-card-icon ${s.color}`}>{s.icon}</div>
               {s.change && (
