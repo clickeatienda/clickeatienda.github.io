@@ -64,27 +64,49 @@ function buildRealReviewsWall(research, scopeId) {
  * Professional Trust Badges - Side by Side with Images
  */
 function buildTrustBadges(scopeId, icons) {
-  const defaultIcons = {
+  const urls = {
     shipping: 'https://cdn.shopify.com/s/files/1/0991/0045/9372/t/1/assets/shipping-premium.png?v=1778423071',
     payment: 'https://cdn.shopify.com/s/files/1/0991/0045/9372/t/1/assets/payment-premium.png?v=1778423072',
     warranty: 'https://cdn.shopify.com/s/files/1/0991/0045/9372/t/1/assets/warranty-premium.png?v=1778423074'
   };
-  const urls = { ...defaultIcons, ...icons };
 
   return `
     <div class="${scopeId}-trust-row">
       <div class="${scopeId}-trust-col">
-        <img src="${urls.shipping}" alt="Envío Gratis">
+        <div class="${scopeId}-trust-icon-bg">
+          <img src="${urls.shipping}" alt="Envío Gratis">
+        </div>
         <span>Envío Gratis</span>
       </div>
       <div class="${scopeId}-trust-col">
-        <img src="${urls.payment}" alt="Paga al Recibir">
+        <div class="${scopeId}-trust-icon-bg">
+          <img src="${urls.payment}" alt="Paga al Recibir">
+        </div>
         <span>Paga al Recibir</span>
       </div>
       <div class="${scopeId}-trust-col">
-        <img src="${urls.warranty}" alt="Garantía Directa">
+        <div class="${scopeId}-trust-icon-bg">
+          <img src="${urls.warranty}" alt="Garantía Directa">
+        </div>
         <span>Garantía Directa</span>
       </div>
+    </div>
+  `;
+}
+
+/**
+ * Payment Security Seals
+ */
+function buildPaymentSecuritySeals(scopeId) {
+  return `
+    <div style="background: #f8fafc; padding: 25px 15px; border-radius: 20px; margin: 20px 15px; border: 1px solid #e2e8f0; text-align: center;">
+      <p style="font-size: 13px; font-weight: 800; color: #1e293b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Pago 100% Seguro y Protegido</p>
+      <div style="display: flex; justify-content: center; gap: 15px; align-items: center; opacity: 0.8;">
+        <img src="https://cdn.shopify.com/s/files/1/0991/0045/9372/t/1/assets/payment-premium.png?v=1778423072" style="height: 35px; width: auto;" alt="Pago Seguro">
+        <div style="width: 1px; height: 30px; background: #cbd5e1;"></div>
+        <img src="https://cdn.shopify.com/s/files/1/0991/0045/9372/t/1/assets/warranty-premium.png?v=1778423074" style="height: 35px; width: auto;" alt="Garantía">
+      </div>
+      <p style="font-size: 11px; color: #64748b; margin-top: 15px; line-height: 1.4;">Tus datos están protegidos con encriptación SSL de 256 bits. Compras con total tranquilidad.</p>
     </div>
   `;
 }
@@ -93,18 +115,33 @@ function buildTrustBadges(scopeId, icons) {
  * Social Proof Badges - Compact single line
  */
 function buildSocialProofCompact(scopeId) {
+  const baseViewers = Math.floor(Math.random() * (450 - 280) + 280);
+  const baseSold = Math.floor(Math.random() * (95 - 45) + 45);
+  const rating = (Math.random() * (5.0 - 4.8) + 4.8).toFixed(1);
+
   return `
     <div class="${scopeId}-social-row">
-      <div class="${scopeId}-social-item">👁️ <span id="${scopeId}-viewers">347</span> viendo</div>
-      <div class="${scopeId}-social-item">🛒 89 vendidos hoy</div>
-      <div class="${scopeId}-social-item">⭐ 4.9 valoración</div>
+      <div class="${scopeId}-social-item">👁️ <span id="${scopeId}-viewers">${baseViewers}</span> personas viendo ahora</div>
+      <div class="${scopeId}-social-item">🛒 <span id="${scopeId}-sold">${baseSold}</span> vendidos hoy</div>
+      <div class="${scopeId}-social-item">⭐ ${rating} valoración</div>
     </div>
     <script>
       (function(){
-        var el = document.getElementById('${scopeId}-viewers');
-        if(el) setInterval(function(){
-          el.textContent = Math.floor(280 + Math.random() * 150);
-        }, 5000);
+        const vEl = document.getElementById('${scopeId}-viewers');
+        const sEl = document.getElementById('${scopeId}-sold');
+        if(vEl) {
+          setInterval(() => {
+            const current = parseInt(vEl.innerText);
+            const diff = Math.floor(Math.random() * 7) - 3;
+            vEl.innerText = Math.max(150, current + diff);
+          }, 3000);
+        }
+        if(sEl) {
+          setInterval(() => {
+            const current = parseInt(sEl.innerText);
+            if(Math.random() > 0.8) sEl.innerText = current + 1;
+          }, 10000);
+        }
       })();
     </script>
   `;
@@ -362,6 +399,9 @@ export function generateLanding(research, globalIcons = {}) {
 
   <!-- FEATURES LIST -->
   ${buildFeaturesList(research.features, scopeId)}
+
+  <!-- PAYMENT SECURITY -->
+  ${buildPaymentSecuritySeals(scopeId)}
 
   <!-- FAQS -->
   ${getFaqsHtml(specificFaqs)}
