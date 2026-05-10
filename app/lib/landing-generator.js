@@ -35,24 +35,27 @@ function buildRealReviewsWall(research, scopeId) {
 
   return `
     <div class="${scopeId}-reviews-wall">
-      ${reviewImages.map((src, i) => `
-        <div class="${scopeId}-review-card">
-          <div class="${scopeId}-review-header">
-            <div class="${scopeId}-review-user">
-              <strong>${names[i % names.length]}</strong>
-              <span>Compra Verificada</span>
+      ${reviewImages.map((src, i) => {
+        const rating = i % 3 === 0 ? '⭐⭐⭐⭐' : '⭐⭐⭐⭐⭐';
+        return `
+          <div class="${scopeId}-review-card">
+            <div class="${scopeId}-review-header">
+              <div class="${scopeId}-review-user">
+                <strong>${names[i % names.length]}</strong>
+                <span>Compra Verificada</span>
+              </div>
+              <div class="${scopeId}-review-stars">${rating}</div>
             </div>
-            <div class="${scopeId}-review-stars">⭐⭐⭐⭐⭐</div>
+            <div class="${scopeId}-review-image">
+              <img src="${src}" alt="Reseña real">
+            </div>
+            <div class="${scopeId}-review-footer">
+              <p>"${reviewComments[i]}"</p>
+              <span>${dates[i % dates.length]}</span>
+            </div>
           </div>
-          <div class="${scopeId}-review-image">
-            <img src="${src}" alt="Reseña real">
-          </div>
-          <div class="${scopeId}-review-footer">
-            <p>"${reviewComments[i]}"</p>
-            <span>${dates[i % dates.length]}</span>
-          </div>
-        </div>
-      `).join('')}
+        `;
+      }).join('')}
     </div>
     <div style="text-align:center; margin-top:15px; font-size:13px; color:#10b981; font-weight:700; text-transform:uppercase; letter-spacing:1px;">
       ✅ +2,480 clientes satisfechos en Colombia
@@ -63,30 +66,24 @@ function buildRealReviewsWall(research, scopeId) {
 /**
  * Professional Trust Badges - Side by Side with Images
  */
-function buildTrustBadges(scopeId, icons) {
-  const urls = {
-    shipping: 'https://cdn.shopify.com/s/files/1/0991/0045/9372/t/1/assets/shipping-premium.png?v=1778423071',
-    payment: 'https://cdn.shopify.com/s/files/1/0991/0045/9372/t/1/assets/payment-premium.png?v=1778423072',
-    warranty: 'https://cdn.shopify.com/s/files/1/0991/0045/9372/t/1/assets/warranty-premium.png?v=1778423074'
-  };
-
+function buildTrustBadges(scopeId) {
   return `
     <div class="${scopeId}-trust-row">
       <div class="${scopeId}-trust-col">
         <div class="${scopeId}-trust-icon-bg">
-          <img src="${urls.shipping}" alt="Envío Gratis">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#00a650" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
         </div>
         <span>Envío Gratis</span>
       </div>
       <div class="${scopeId}-trust-col">
         <div class="${scopeId}-trust-icon-bg">
-          <img src="${urls.payment}" alt="Paga al Recibir">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#3483fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
         </div>
         <span>Paga al Recibir</span>
       </div>
       <div class="${scopeId}-trust-col">
         <div class="${scopeId}-trust-icon-bg">
-          <img src="${urls.warranty}" alt="Garantía Directa">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ff7733" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
         </div>
         <span>Garantía Directa</span>
       </div>
@@ -99,14 +96,14 @@ function buildTrustBadges(scopeId, icons) {
  */
 function buildPaymentSecuritySeals(scopeId) {
   return `
-    <div style="background: #f8fafc; padding: 25px 15px; border-radius: 20px; margin: 20px 15px; border: 1px solid #e2e8f0; text-align: center;">
+    <div style="background: #ffffff; padding: 25px 15px; border-radius: 20px; margin: 20px 15px; border: 1px solid #e2e8f0; text-align: center;">
       <p style="font-size: 13px; font-weight: 800; color: #1e293b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Pago 100% Seguro y Protegido</p>
-      <div style="display: flex; justify-content: center; gap: 15px; align-items: center; opacity: 0.8;">
-        <img src="https://cdn.shopify.com/s/files/1/0991/0045/9372/t/1/assets/payment-premium.png?v=1778423072" style="height: 35px; width: auto;" alt="Pago Seguro">
-        <div style="width: 1px; height: 30px; background: #cbd5e1;"></div>
-        <img src="https://cdn.shopify.com/s/files/1/0991/0045/9372/t/1/assets/warranty-premium.png?v=1778423074" style="height: 35px; width: auto;" alt="Garantía">
+      <div style="display: flex; justify-content: center; gap: 25px; align-items: center;">
+        <svg viewBox="0 0 24 24" width="35" height="35" fill="none" stroke="#00a650" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <svg viewBox="0 0 24 24" width="35" height="35" fill="none" stroke="#00a650" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
+        <svg viewBox="0 0 24 24" width="35" height="35" fill="none" stroke="#00a650" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       </div>
-      <p style="font-size: 11px; color: #64748b; margin-top: 15px; line-height: 1.4;">Tus datos están protegidos con encriptación SSL de 256 bits. Compras con total tranquilidad.</p>
+      <p style="font-size: 11px; color: #64748b; margin-top: 15px; line-height: 1.4;">Tus datos están protegidos con encriptación SSL de 256 bits. Compras con total tranquilidad en Clickea Tienda.</p>
     </div>
   `;
 }
@@ -344,11 +341,6 @@ export function generateLanding(research, globalIcons = {}) {
 </style>
 
 <div id="${scopeId}">
-  <!-- HEADER -->
-  <div style="background:#000; color:white; text-align:center; padding:10px; font-weight:800; font-size:11px; letter-spacing:1px;">
-    🚚 ENVÍO GRATIS A TODA COLOMBIA - PAGA AL RECIBIR
-  </div>
-
   <!-- TITLE & CAROUSEL -->
   <div style="padding: 25px 20px;">
     <h1 style="font-size: 26px; font-weight: 900; text-align: center; margin-bottom: 25px; line-height:1.2; color:#0f172a;">${research.name}</h1>
@@ -358,9 +350,6 @@ export function generateLanding(research, globalIcons = {}) {
   <!-- ORDER: SOCIAL PROOF FIRST -->
   ${buildSocialProofCompact(scopeId)}
 
-  <!-- ORDER: TRUST BADGES SECOND -->
-  ${buildTrustBadges(scopeId, globalIcons)}
-
   <!-- PAIN POINT SECTION (DYNAMIC & SPECIFIC) -->
   <div style="padding: 30px 20px; background: #fef2f2; border-radius: 20px; margin: 25px 15px; border: 1px dashed #fca5a5;">
     <h2 style="font-size: 20px; font-weight: 900; color: #991b1b; margin-bottom: 12px; line-height:1.3;">${copy.hook}</h2>
@@ -369,6 +358,9 @@ export function generateLanding(research, globalIcons = {}) {
        <p style="font-size: 14px; color: #1e293b; margin:0;">${copy.solution}</p>
     </div>
   </div>
+
+  <!-- ORDER: TRUST BADGES SECOND -->
+  ${buildTrustBadges(scopeId)}
 
   <!-- SOCIAL VALIDATION COLLAGE (PRODUCT SPECIFIC) -->
   <div style="padding: 30px 0;">
@@ -381,12 +373,14 @@ export function generateLanding(research, globalIcons = {}) {
     <h2 style="font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 20px; text-align:center;">¿Por qué elegir el ${research.name}?</h2>
     <div style="display: flex; flex-direction: column; gap: 20px;">
       ${benefits.map(b => {
-        const [title, desc] = b.split('**').slice(1);
+        const parts = b.split('**');
+        const title = parts.length > 1 ? parts[1].replace(':', '') : 'Beneficio';
+        const desc = parts.length > 2 ? parts[2] : b;
         return `
           <div style="display:flex; gap:15px; align-items:flex-start;">
             <div style="font-size:24px;">✅</div>
             <div>
-              <p style="font-size:16px; font-weight:800; margin:0 0 5px 0; color:#10b981;">${title.replace(':', '')}</p>
+              <p style="font-size:16px; font-weight:800; margin:0 0 5px 0; color:#10b981;">${title}</p>
               <p style="font-size:14px; color:#cbd5e1; margin:0; line-height:1.5;">${desc}</p>
             </div>
           </div>
@@ -394,6 +388,7 @@ export function generateLanding(research, globalIcons = {}) {
       }).join('')}
     </div>
   </div>
+
   <!-- TECHNICAL HIGHLIGHT IMAGE (DYNAMIC) -->
   ${buildAnatomicalHighlight(research, scopeId)}
 
@@ -406,14 +401,7 @@ export function generateLanding(research, globalIcons = {}) {
   <!-- FAQS -->
   ${getFaqsHtml(specificFaqs)}
 
-  <div style="height:100px;"></div>
-
-  <!-- STICKY CTA -->
-  <div style="position: sticky; bottom: 20px; padding: 0 15px; z-index: 100;">
-    <div style="background: #10b981; color: white; text-align: center; padding: 18px; border-radius: 50px; font-weight: 900; font-size: 19px; box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4); cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
-      🛒 PIDE AHORA Y PAGA EN CASA
-    </div>
-  </div>
+  <div style="height:40px;"></div>
 </div>
 `;
 }
