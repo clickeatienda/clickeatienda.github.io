@@ -18,18 +18,24 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  // Create a pending product record
-  const { data, error } = await supabase
-    .from('products')
-    .insert({
-      name: productName,
-      dropi_id: dropiId || null,
-      supplier_cost: supplierCost,
-      category,
-      import_status: 'pending_research',
-      status_message: 'Esperando al investigador local...',
-      progress: 5,
-      is_active: false,
+  // Upsert the product record (update if dropi_id exists, otherwise insert)
+  let query = supabase.from('products');
+  
+  const productData = {
+    name: productName,
+    dropi_id: dropiId || null,
+    supplier_cost: supplierCost,
+    category,
+    import_status: 'pending_research',
+    status_message: 'Esperando al investigador local...',
+    progress: 5,
+    is_active: false,
+  };
+
+  const { data, error } = await query
+    .upsert(productData, { 
+      onConflict: dropiId ? 'dropi_id' : 'id',
+      ignoreDuplicates: false 
     })
     .select('id')
     .single();
