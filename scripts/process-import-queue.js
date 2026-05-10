@@ -92,7 +92,8 @@ async function processProduct(p) {
     // STEP 1: Process manual image links and generate AI copy/features
     await updateProgress(id, 15, "🔍 Generando copy y características mediante IA...");
     const manualReviewImages = p.research_data?.manualReviewImages || [];
-    const research = await researchProduct(p.name, p.images || [], manualReviewImages);
+    const manualFeaturesImage = p.research_data?.manualFeaturesImage || null;
+    const research = await researchProduct(p.name, p.images || [], manualReviewImages, manualFeaturesImage);
 
     // STEP 2: Upload all images to Shopify CDN securely
     await updateProgress(id, 40, `Subiendo ${research.images.length} imágenes al CDN de Shopify...`);

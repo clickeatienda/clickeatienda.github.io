@@ -7,6 +7,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
   const [productName, setProductName] = useState("");
   const [productImageUrls, setProductImageUrls] = useState("");
   const [reviewImageUrls, setReviewImageUrls] = useState("");
+  const [featuresImageUrl, setFeaturesImageUrl] = useState("");
   const [supplierCost, setSupplierCost] = useState("");
   const [dropiId, setDropiId] = useState("");
   const [category, setCategory] = useState("Tecnología");
@@ -39,6 +40,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
           dropiId,
           productImageUrls: productImageUrls.split('\n').map(u => u.trim()).filter(Boolean),
           reviewImageUrls: reviewImageUrls.split('\n').map(u => u.trim()).filter(Boolean),
+          featuresImageUrl: featuresImageUrl.trim(),
           supplierCost: parseFloat(supplierCost),
           category
         })
@@ -81,6 +83,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
     setProductName("");
     setProductImageUrls("");
     setReviewImageUrls("");
+    setFeaturesImageUrl("");
     setSupplierCost("");
     onClose();
   };
@@ -124,6 +127,17 @@ export default function ImportProductModal({ isOpen, onClose }) {
                   placeholder="Pegue aquí fotos de clientes usando el producto..." 
                   rows="2"
                   style={{ width: '100%', padding: '10px', background: 'transparent', border: '1px solid rgba(217, 70, 239, 0.3)', borderRadius: '6px', color: 'white', resize: 'vertical' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ background: '#f0fdf4', padding: '10px', borderRadius: '8px', border: '1px solid #22c55e', marginTop: '10px' }}>
+                <label style={{ color: '#22c55e', display: 'flex', alignItems: 'center', gap: '5px' }}><ImageIcon size={16}/> Imagen de Características Técnicas (Opcional)</label>
+                <input 
+                  type="url"
+                  value={featuresImageUrl} 
+                  onChange={e => setFeaturesImageUrl(e.target.value)} 
+                  placeholder="Si ya tienes una foto con textos técnicos, pégala aquí..." 
+                  style={{ width: '100%', padding: '10px', background: 'transparent', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '6px', color: 'white' }}
                 />
               </div>
 

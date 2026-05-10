@@ -12,7 +12,7 @@ export async function POST(request) {
   }
 
   const supabase = createClient(supabaseUrl, supabaseKey);
-  const { productName, dropiId, productImageUrls, reviewImageUrls, supplierCost, category } = await request.json();
+  const { productName, dropiId, productImageUrls, reviewImageUrls, featuresImageUrl, supplierCost, category } = await request.json();
 
   if (!productName || !supplierCost) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -27,7 +27,10 @@ export async function POST(request) {
     supplier_cost: supplierCost,
     category,
     images: productImageUrls || [],
-    research_data: { manualReviewImages: reviewImageUrls || [] },
+    research_data: { 
+      manualReviewImages: reviewImageUrls || [],
+      manualFeaturesImage: featuresImageUrl || null
+    },
     import_status: 'pending_research',
     status_message: 'Esperando al investigador local...',
     progress: 5,

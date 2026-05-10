@@ -217,7 +217,7 @@ function cleanFeatures(features) {
  * @param {string} dropiImageUrl - Image URL from Dropi catalog
  * @returns {object} Research results with images, features, description
  */
-export async function researchProduct(productName, dropiImages = [], manualReviewImages = []) {
+export async function researchProduct(productName, dropiImages = [], manualReviewImages = [], manualFeaturesImage = null) {
   // Normalize to arrays
   const originalImages = Array.isArray(dropiImages) ? dropiImages : (dropiImages ? [dropiImages] : []);
   const reviewImages = Array.isArray(manualReviewImages) ? manualReviewImages : (manualReviewImages ? [manualReviewImages] : []);
@@ -227,12 +227,14 @@ export async function researchProduct(productName, dropiImages = [], manualRevie
   console.log(`   PROCESSING: ${productName}`);
   console.log(`   Manual Product Images: ${originalImages.length}`);
   console.log(`   Manual Review Images: ${reviewImages.length}`);
+  if (manualFeaturesImage) console.log(`   Manual Features Image: Provided`);
   console.log(`   ========================================\n`);
 
   const results = {
     name: productName,
     images: [...originalImages],
     reviewImages: [...reviewImages],
+    featuresImage: manualFeaturesImage,
     reviewComments: [],
     features: [],
     description: '',
