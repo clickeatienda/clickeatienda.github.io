@@ -6,6 +6,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
   const [step, setStep] = useState('input'); // 'input', 'processing', 'success', 'error'
   const [productName, setProductName] = useState("");
   const [dropiId, setDropiId] = useState("");
+  const [dropiImageUrl, setDropiImageUrl] = useState("");
   const [supplierCost, setSupplierCost] = useState("");
   const [category, setCategory] = useState("Tecnología");
   const [progress, setProgress] = useState(0);
@@ -22,8 +23,8 @@ export default function ImportProductModal({ isOpen, onClose }) {
 
   async function handleStartImport(e) {
     e.preventDefault();
-    if (!productName || !supplierCost) {
-      setError("Por favor completa el nombre y el costo del proveedor.");
+    if (!productName || !supplierCost || !dropiImageUrl) {
+      setError("Por favor completa el nombre, el costo y el link de la imagen.");
       return;
     }
 
@@ -39,6 +40,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
         body: JSON.stringify({
           productName,
           dropiId,
+          dropiImageUrl,
           supplierCost: parseFloat(supplierCost),
           category
         })
@@ -89,6 +91,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
     setStep('input');
     setProductName("");
     setDropiId("");
+    setDropiImageUrl("");
     setSupplierCost("");
     setProgress(0);
     setStatusMessage("");
@@ -119,6 +122,16 @@ export default function ImportProductModal({ isOpen, onClose }) {
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
                   autoFocus
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Link de Imagen de Dropi (Derecho -> Copiar dirección de imagen)</label>
+                <input 
+                  type="url" 
+                  placeholder="https://app.dropi.co/storage/products/..." 
+                  value={dropiImageUrl}
+                  onChange={(e) => setDropiImageUrl(e.target.value)}
                 />
               </div>
 
