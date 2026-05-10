@@ -1,4 +1,5 @@
 "use client";
+// Force rebuild - V2
 import { useState, useEffect } from "react";
 import { X, Sparkles, Loader2, CheckCircle2, AlertCircle, ShoppingBag, Search, ImageIcon, Video, FileText, Rocket } from "lucide-react";
 
