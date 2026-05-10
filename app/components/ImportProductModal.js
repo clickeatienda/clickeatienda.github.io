@@ -5,7 +5,8 @@ import { X, Sparkles, Loader2, CheckCircle2, AlertCircle, ExternalLink, Search, 
 export default function ImportProductModal({ isOpen, onClose }) {
   const [step, setStep] = useState('input');
   const [productName, setProductName] = useState("");
-  const [dropiImageUrl, setDropiImageUrl] = useState("");
+  const [productImageUrls, setProductImageUrls] = useState("");
+  const [reviewImageUrls, setReviewImageUrls] = useState("");
   const [supplierCost, setSupplierCost] = useState("");
   const [dropiId, setDropiId] = useState("");
   const [category, setCategory] = useState("Tecnología");
@@ -19,8 +20,8 @@ export default function ImportProductModal({ isOpen, onClose }) {
 
   async function handleStartImport(e) {
     e.preventDefault();
-    if (!productName || !supplierCost || !dropiImageUrl) {
-      setError("Faltan campos: Nombre, Costo e Imagen son obligatorios.");
+    if (!productName || !supplierCost || !productImageUrls) {
+      setError("Faltan campos: Nombre, Costo y al menos una Imagen principal son obligatorios.");
       return;
     }
 
@@ -36,7 +37,8 @@ export default function ImportProductModal({ isOpen, onClose }) {
         body: JSON.stringify({
           productName,
           dropiId,
-          dropiImageUrl,
+          productImageUrls: productImageUrls.split('\n').map(u => u.trim()).filter(Boolean),
+          reviewImageUrls: reviewImageUrls.split('\n').map(u => u.trim()).filter(Boolean),
           supplierCost: parseFloat(supplierCost),
           category
         })
@@ -77,7 +79,8 @@ export default function ImportProductModal({ isOpen, onClose }) {
   const reset = () => {
     setStep('input');
     setProductName("");
-    setDropiImageUrl("");
+    setProductImageUrls("");
+    setReviewImageUrls("");
     setSupplierCost("");
     onClose();
   };
@@ -102,8 +105,26 @@ export default function ImportProductModal({ isOpen, onClose }) {
               </div>
 
               <div className="form-group" style={{ background: '#f0f7ff', padding: '10px', borderRadius: '8px', border: '1px solid #4A9EFF' }}>
-                <label style={{ color: '#4A9EFF' }}>📸 Link de la Imagen de Dropi (Obligatorio)</label>
-                <input type="url" value={dropiImageUrl} onChange={e => setDropiImageUrl(e.target.value)} placeholder="Pegue aquí el link de la imagen de Dropi" required />
+                <label style={{ color: '#4A9EFF', display: 'flex', alignItems: 'center', gap: '5px' }}><ImageIcon size={16}/> URLs de Imágenes Principales (Una por línea)</label>
+                <textarea 
+                  value={productImageUrls} 
+                  onChange={e => setProductImageUrls(e.target.value)} 
+                  placeholder="Pegue aquí los enlaces de las fotos (Ej: https://...)" 
+                  rows="3"
+                  required 
+                  style={{ width: '100%', padding: '10px', background: 'transparent', border: '1px solid rgba(74, 158, 255, 0.3)', borderRadius: '6px', color: 'white', resize: 'vertical' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ background: '#fdf4ff', padding: '10px', borderRadius: '8px', border: '1px solid #d946ef', marginTop: '10px' }}>
+                <label style={{ color: '#d946ef', display: 'flex', alignItems: 'center', gap: '5px' }}><Search size={16}/> URLs de Fotos de Reseñas (Opcional)</label>
+                <textarea 
+                  value={reviewImageUrls} 
+                  onChange={e => setReviewImageUrls(e.target.value)} 
+                  placeholder="Pegue aquí fotos de clientes usando el producto..." 
+                  rows="2"
+                  style={{ width: '100%', padding: '10px', background: 'transparent', border: '1px solid rgba(217, 70, 239, 0.3)', borderRadius: '6px', color: 'white', resize: 'vertical' }}
+                />
               </div>
 
               <div className="form-row">

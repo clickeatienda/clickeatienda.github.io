@@ -8,6 +8,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { calculatePrice, DEFAULT_PRICING_CONFIG } from '../app/lib/pricing-engine.js';
+import { researchProduct, generateSmartLanding } from '../app/lib/product-researcher.js';
+import { uploadAllImages } from '../app/lib/shopify-image-uploader.js';
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
@@ -31,57 +33,55 @@ async function updateProgress(id, progress, message, status = 'researching') {
     .eq('id', id);
 }
 
-async function createShopifyProduct(product, pricing) {
-  const query = `
-    mutation productCreate($input: ProductInput!) {
-      productCreate(input: $input) {
-        product { id title handle onlineStoreUrl }
-        userErrors { field message }
-      }
-    }
-  `;
+const API_VERSION = '2024-04';
 
-  const variables = {
-    input: {
+// Use REST API - more stable than GraphQL for product creation
+async function createShopifyProduct(product, pricing, images, description) {
+  const body = {
+    product: {
       title: product.name,
-      bodyHtml: product.description || `<h1>${product.name}</h1><p>Garantía de calidad y envío rápido.</p>`,
-      vendor: 'Clickea Tienda',
-      productType: product.category || 'General',
-      status: 'ACTIVE',
+      body_html: description,
+      vendor: "Clickea Tienda",
+      product_type: product.category || "General",
+      status: "active",
+      tags: ["importacion-inteligente", product.category || ""].join(", "),
       variants: [{
         price: String(pricing.sellingPrice),
-        compareAtPrice: pricing.beforePrice ? String(pricing.beforePrice) : null,
-        inventoryManagement: null,
-        requiresShipping: true
+        compare_at_price: pricing.beforePrice ? String(pricing.beforePrice) : null,
+        inventory_management: null,
+        requires_shipping: true,
       }],
-      images: product.images ? product.images.map(src => ({ src })) : []
+      images: images ? images.map(src => ({ src })) : [],
     }
   };
 
-  const res = await fetch(`https://${SHOPIFY_STORE}/admin/api/2024-04/graphql.json`, {
-    method: 'POST',
-    headers: {
-      'X-Shopify-Access-Token': SHOPIFY_TOKEN,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ query, variables }),
-  });
+  const response = await fetch(
+    `https://${SHOPIFY_STORE}/admin/api/${API_VERSION}/products.json`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': SHOPIFY_TOKEN,
+      },
+      body: JSON.stringify(body),
+    }
+  );
 
-  const json = await res.json();
+  const result = await response.json();
   
-  if (json.errors) {
-    throw new Error(`Shopify GraphQL Error: ${json.errors.map(e => e.message).join(', ')}`);
+  if (!response.ok) {
+    throw new Error(`Shopify REST Error ${response.status}: ${JSON.stringify(result.errors || result)}`);
   }
 
-  if (json.data?.productCreate?.userErrors?.length > 0) {
-    throw new Error(`Shopify User Error: ${json.data.productCreate.userErrors[0].message}`);
+  if (!result.product) {
+    throw new Error(`Unexpected Shopify Response: ${JSON.stringify(result)}`);
   }
 
-  if (!json.data?.productCreate?.product) {
-    throw new Error(`Unexpected Shopify response: ${JSON.stringify(json)}`);
-  }
-
-  return json.data.productCreate.product;
+  return {
+    id: String(result.product.id),
+    handle: result.product.handle,
+    onlineStoreUrl: `https://${SHOPIFY_STORE}/products/${result.product.handle}`
+  };
 }
 
 async function processProduct(p) {
@@ -89,25 +89,33 @@ async function processProduct(p) {
   const id = p.id;
 
   try {
-    // STEP 1: Multi-platform Research
-    await updateProgress(id, 15, "Investigando en Amazon y AliExpress...");
-    await new Promise(r => setTimeout(r, 3000)); // Simulating deep research
+    // STEP 1: Process manual image links and generate AI copy/features
+    await updateProgress(id, 15, "🔍 Generando copy y características mediante IA...");
+    const manualReviewImages = p.research_data?.manualReviewImages || [];
+    const research = await researchProduct(p.name, p.images || [], manualReviewImages);
 
-    // STEP 2: Scrape images
-    await updateProgress(id, 40, "Descargando imágenes HD y buscando videos...");
-    await new Promise(r => setTimeout(r, 2000));
+    // STEP 2: Upload all images to Shopify CDN securely
+    await updateProgress(id, 40, `Subiendo ${research.images.length} imágenes al CDN de Shopify...`);
+    // Create a safe slug from product name for image filenames
+    const productSlug = p.name.replace(/[^a-z0-9]/gi, '-').toLowerCase().replace(/-+/g, '-');
+    const cdnUrls = await uploadAllImages(research.images, productSlug);
+    
+    // Replace original images with CDN URLs if upload was successful
+    if (cdnUrls.length > 0) {
+      research.images = cdnUrls;
+    }
 
-    // STEP 3: Generate GIFs (ffmpeg simulation)
-    await updateProgress(id, 70, "Generando GIFs de alta conversión...");
-    await new Promise(r => setTimeout(r, 3000));
+    // STEP 3: Generate premium landing HTML with CSS carousel using CDN URLs
+    await updateProgress(id, 55, `Generando landing premium con imágenes CDN...`);
+    const smartDescription = generateSmartLanding(research);
 
     // STEP 4: Calculate Final Price
     const pricing = calculatePrice(p.supplier_cost, DEFAULT_PRICING_CONFIG);
-    await updateProgress(id, 85, `Precio calculado: $${pricing.sellingPrice.toLocaleString()} (Margen: ${pricing.actualMargin}%)`);
+    await updateProgress(id, 75, `Precio: $${pricing.sellingPrice.toLocaleString()} | Margen: ${pricing.actualMargin}%`);
 
-    // STEP 5: Create in Shopify
-    await updateProgress(id, 95, "Publicando landing optimizada en Shopify...");
-    const shopifyProduct = await createShopifyProduct(p, pricing);
+    // STEP 5: Create in Shopify with all images + landing HTML
+    await updateProgress(id, 90, "Publicando en Shopify con galería completa...");
+    const shopifyProduct = await createShopifyProduct(p, pricing, research.images, smartDescription);
 
     // STEP 6: Finalize
     await supabase
