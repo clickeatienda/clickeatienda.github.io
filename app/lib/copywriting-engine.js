@@ -42,6 +42,12 @@ const PRODUCT_PAINS = [
     hook: '¿Tus pies terminan destrozados y adoloridos después de un día normal de actividades?',
     pain: 'Usar calzado que no brinda el soporte adecuado causa dolores crónicos en pies, rodillas y espalda. No deberías tener que elegir entre lucir bien y caminar sin dolor.',
     solution: 'El {name} te permite caminar sobre las nubes con un diseño que prioriza tu ergonomía. Estilo y salud se unen para que puedas estar de pie todo el día sin una sola molestia.',
+  },
+  {
+    keywords: ['cepillo', 'secador', 'pelo', 'cabello', 'keratina', 'plancha'],
+    hook: '¿Pasas horas tratando de arreglar tu cabello solo para terminar con frizz y daño por calor?',
+    pain: 'Ir a la peluquería es costoso y consume tiempo que no tienes. Además, usar secadores convencionales y planchas quema tu fibra capilar, dejándola opaca, quebradiza y sin vida cada mañana.',
+    solution: 'El {name} combina potencia y cuidado en un solo paso. Seca, alisa y da volumen mientras protege tu cabello, dándote un acabado de salón en solo 10 minutos sin salir de casa.',
   }
 ];
 
@@ -60,6 +66,11 @@ const EMOTIONAL_BENEFITS = {
     '💆 **Adiós al Estrés Acumulado:** Libera la tensión de todo el día en solo 15 minutos, sin necesidad de salir de casa.',
     '⚡ **Vitalidad Instantánea:** Recupera la movilidad y la energía para seguir con tus proyectos sin el lastre del dolor muscular.',
     '💰 **Ahorro Inteligente:** Evita gastos recurrentes en terapias costosas con una solución profesional de un solo pago.'
+  ],
+  belleza: [
+    '💖 **Acabado de Salón en Casa:** Siéntete segura y radiante todos los días con un look profesional hecho por ti misma en minutos.',
+    '🕒 **Gana Tiempo Cada Mañana:** Simplifica tu rutina de belleza para que puedas disfrutar de tu café o dormir un poco más.',
+    '🌿 **Cuidado y Salud Capilar:** Protege tu cabello mientras lo estilizas, manteniendo su brillo natural y fuerza original.'
   ]
 };
 
@@ -132,6 +143,7 @@ export function getCreativeBenefits(productName, features = []) {
   let emotional = EMOTIONAL_BENEFITS.general;
   if (nameLower.includes('humidificador')) emotional = EMOTIONAL_BENEFITS.humidificador;
   if (nameLower.includes('masajeador')) emotional = EMOTIONAL_BENEFITS.masajeador;
+  if (/(pelo|cabello|cepillo|secador|belleza|facial)/i.test(nameLower)) emotional = EMOTIONAL_BENEFITS.belleza;
   
   // 2. Get Feature-Based Benefits
   const validFeatures = features.filter(f => {

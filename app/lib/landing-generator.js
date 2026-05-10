@@ -313,11 +313,13 @@ export function generateLanding(research, globalIcons = {}) {
   return `
 <style>
   #${scopeId} { font-family: 'Inter', sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; background: #fff; line-height: 1.5; }
-  .${scopeId}-trust-row { display: flex; justify-content: space-between; padding: 15px 10px; gap: 5px; border-top: 1px solid #f1f5f9; margin-top: 5px; background: #fafafa; }
-  .${scopeId}-trust-col { flex: 1; text-align: center; font-size: 13px; font-weight: 800; color: #1e293b; }
-  .${scopeId}-trust-col img { width: 48px; height: 48px; margin: 0 auto 8px; display: block; }
-  .${scopeId}-social-row { display: flex; justify-content: center; gap: 8px; font-size: 10px; color: #94a3b8; margin: 10px 0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-  .${scopeId}-social-item { background: #fff; padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 3px; border: 1px solid #f1f5f9; }
+  .${scopeId}-trust-row { display: flex; justify-content: space-between; padding: 20px 10px; gap: 10px; border-top: 1px solid #f1f5f9; background: #ffffff; }
+  .${scopeId}-trust-col { flex: 1; text-align: center; font-size: 11px; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; display: flex; flex-direction: column; align-items: center; }
+  .${scopeId}-trust-icon-bg { width: 50px; height: 50px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: 1px solid #f1f5f9; }
+  .${scopeId}-trust-col svg { width: 24px; height: 24px; }
+  
+  .${scopeId}-social-row { display: flex; justify-content: center; gap: 8px; font-size: 10px; color: #64748b; margin: 15px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .${scopeId}-social-item { background: #f0fdf4; color: #166534; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px; border: 1px solid #dcfce7; }
   .${scopeId}-section-title { font-size: 22px; font-weight: 900; color: #0f172a; text-align: center; margin-bottom: 20px; letter-spacing: -0.5px; }
   .${scopeId}-feature-list { list-style: none; padding: 0; margin: 15px 0; border-top: 1px solid #f1f5f9; }
   .${scopeId}-feature-list li { padding: 4px 0; border-bottom: 1px solid #f8fafc; font-size: 13px; color: #64748b; line-height: 1.2; display: flex; align-items: flex-start; }
