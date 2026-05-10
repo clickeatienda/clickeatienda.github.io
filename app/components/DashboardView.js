@@ -6,10 +6,10 @@ import {
   Plus, Video, Image, BarChart3, Clock
 } from "lucide-react";
 import { SalesChart, ContentChart } from "./Charts";
-
-
+import ImportProductModal from "./ImportProductModal";
 
 export default function DashboardView() {
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [data, setData] = useState({
     stats: {
       ventasHoy: 0, productsActive: 0, visitasHoy: 0,
@@ -50,6 +50,11 @@ export default function DashboardView() {
 
   return (
     <div className="animate-in">
+      <ImportProductModal 
+        isOpen={isImportModalOpen} 
+        onClose={() => setIsImportModalOpen(false)} 
+      />
+
       {/* Stats Grid */}
       <div className="stats-grid">
         {statsList.map((s, i) => (
@@ -107,7 +112,7 @@ export default function DashboardView() {
           </div>
           <div className="panel-card-body">
             <div className="actions-grid">
-              <div className="action-btn">
+              <div className="action-btn" onClick={() => setIsImportModalOpen(true)} style={{ cursor: 'pointer' }}>
                 <Plus size={24} />
                 Importar Productos
               </div>

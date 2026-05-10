@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Package, Search, Filter, Edit, Trash2, ExternalLink } from "lucide-react";
+import ImportProductModal from "./ImportProductModal";
 
 export default function ProductsView() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -20,7 +22,7 @@ export default function ProductsView() {
       }
     }
     fetchProducts();
-  }, []);
+  }, [isImportModalOpen]); // Refresh when modal closes (might have new product)
 
   if (loading) {
     return <div className="animate-in"><div className="empty-state">Cargando catálogo de productos...</div></div>;
@@ -28,6 +30,11 @@ export default function ProductsView() {
 
   return (
     <div className="animate-in">
+      <ImportProductModal 
+        isOpen={isImportModalOpen} 
+        onClose={() => setIsImportModalOpen(false)} 
+      />
+
       <div className="panel-card" style={{ marginBottom: 20 }}>
         <div className="panel-card-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div className="panel-card-title">
@@ -35,7 +42,13 @@ export default function ProductsView() {
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
              <button className="btn" style={{ padding: '6px 12px', background: 'var(--bg-tertiary)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}><Filter size={14}/> Filtrar</button>
-             <button className="btn" style={{ padding: '6px 12px', background: 'var(--brand-primary)', border: 'none', borderRadius: 6, color: 'white' }}>+ Nuevo Producto</button>
+             <button 
+               className="btn" 
+               style={{ padding: '6px 12px', background: 'var(--brand-primary)', border: 'none', borderRadius: 6, color: 'white', cursor: 'pointer' }}
+               onClick={() => setIsImportModalOpen(true)}
+             >
+               + Nuevo Producto
+             </button>
           </div>
         </div>
         <div className="panel-card-body no-padding">
