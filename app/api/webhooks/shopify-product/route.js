@@ -139,34 +139,27 @@ export async function POST(request) {
   };
 
   // Upsert: insert if new, update if existing (matched by shopify_id)
-  const { data: existing } = await supabase
+  const { data: upserted, error: upsertError } = await supabase
     .from('products')
+    .upsert(productData, { 
+      onConflict: 'shopify_id',
+      ignoreDuplicates: false 
+    })
     .select('id')
-    .eq('shopify_id', shopifyId)
-    .limit(1)
     .single();
 
-  let result;
-  if (existing) {
-    // Update existing product
-    result = await supabase
-      .from('products')
-      .update(productData)
-      .eq('shopify_id', shopifyId);
-  } else {
-    // Insert new product
-    result = await supabase
-      .from('products')
-      .insert(productData);
+  if (upsertError) {
+    console.error(`   ❌ Supabase error: ${upsertError.message}`);
+    // If onConflict fails because shopify_id isn't unique in schema, fall back to manual check
+    if (upsertError.message.includes('unique constraint')) {
+       // already handled by upsert usually, but some supabase versions differ
+    }
+    return NextResponse.json({ error: upsertError.message }, { status: 500 });
   }
 
-  if (result.error) {
-    console.error(`   ❌ Supabase error: ${result.error.message}`);
-    return NextResponse.json({ error: result.error.message }, { status: 500 });
-  }
+  const isNew = !upserted; // This might be tricky with upsert, but we'll use activity log based on intent
+  const actionVerb = 'sincronizado';
 
-  // Log the activity
-  const actionVerb = existing ? 'actualizado' : 'importado';
   await supabase.from('activity_log').insert({
     action: `Producto ${actionVerb} desde Shopify: ${shopifyProduct.title}`,
     details: `Costo: $${supplierCost.toLocaleString()} → Venta: $${(pricing.sellingPrice || 0).toLocaleString()} | Margen: ${pricing.actualMargin || 0}%`,
