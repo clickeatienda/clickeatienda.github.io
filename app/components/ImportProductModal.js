@@ -115,7 +115,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
                   placeholder="Pegue aquí los enlaces de las fotos (Ej: https://...)" 
                   rows="3"
                   required 
-                  style={{ width: '100%', padding: '10px', background: 'transparent', border: '1px solid rgba(74, 158, 255, 0.3)', borderRadius: '6px', color: 'white', resize: 'vertical' }}
+                  className="modal-textarea"
                 />
               </div>
 
@@ -126,7 +126,8 @@ export default function ImportProductModal({ isOpen, onClose }) {
                   onChange={e => setReviewImageUrls(e.target.value)} 
                   placeholder="Pegue aquí fotos de clientes usando el producto..." 
                   rows="2"
-                  style={{ width: '100%', padding: '10px', background: 'transparent', border: '1px solid rgba(217, 70, 239, 0.3)', borderRadius: '6px', color: 'white', resize: 'vertical' }}
+                  className="modal-textarea"
+                  style={{ borderColor: 'rgba(217, 70, 239, 0.3)' }}
                 />
               </div>
 
@@ -137,7 +138,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
                   value={featuresImageUrl} 
                   onChange={e => setFeaturesImageUrl(e.target.value)} 
                   placeholder="Si ya tienes una foto con textos técnicos, pégala aquí..." 
-                  style={{ width: '100%', padding: '10px', background: 'transparent', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '6px', color: 'white' }}
+                  className="modal-input-special"
                 />
               </div>
 
@@ -196,7 +197,33 @@ export default function ImportProductModal({ isOpen, onClose }) {
         .modal-body { padding: 20px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; color: #94A3B8; margin-bottom: 5px; }
-        .form-group input { width: 100%; background: #1E293B; border: 1px solid #334155; border-radius: 8px; padding: 10px; color: white; outline: none; }
+        .form-group input, .form-group textarea { 
+          width: 100%; 
+          background: #1E293B; 
+          border: 1px solid #334155; 
+          border-radius: 8px; 
+          padding: 10px; 
+          color: white !important; 
+          font-size: 14px;
+          outline: none; 
+          font-family: inherit;
+        }
+        .form-group textarea {
+          resize: vertical;
+          min-height: 60px;
+        }
+        .modal-textarea {
+          background: rgba(15, 23, 42, 0.3) !important;
+          border-color: rgba(74, 158, 255, 0.3) !important;
+        }
+        .modal-input-special {
+          background: rgba(15, 23, 42, 0.3) !important;
+          border-color: rgba(34, 197, 94, 0.3) !important;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+          border-color: #4A9EFF;
+          background: #1E293B;
+        }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn-magic { width: 100%; background: #4A9EFF; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; display: block; text-align: center; text-decoration: none; }
         .error-box { background: rgba(239, 68, 68, 0.1); color: #EF4444; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 10px; }
