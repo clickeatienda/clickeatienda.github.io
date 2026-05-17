@@ -252,23 +252,177 @@ export function getCreativeBenefits(productName, features = []) {
   return benefits; // Max 5 benefits
 }
 
-export function getProductFaqs(name, features = []) {
+export function getProductFaqs(name, features = [], category = 'general') {
+  const nameLower = name.toLowerCase();
   const faqs = [];
-  const valid = features.filter(f => !/marca|modelo|ean|sku/i.test(f)).slice(0, 3);
-  
-  valid.forEach(f => {
+
+  // ─── CATEGORY-SPECIFIC Q&A BANKS ───────────────────────────────────────────
+  const CATEGORY_FAQS = {
+    aspiradora: [
+      {
+        question: `¿El ${name} sirve para limpiar tanto el hogar como el auto?`,
+        answer: `¡Sí! El ${name} está diseñado para uso versátil. Su boquilla compacta llega a los rincones más difíciles del auto, los rieles de las ventanas, los sofás y cualquier superficie de tu hogar con igual eficiencia.`
+      },
+      {
+        question: `¿Es fácil vaciar y limpiar el depósito del ${name}?`,
+        answer: `Totalmente. El depósito de polvo se desmonta en segundos con un solo clic, sin necesidad de herramientas. El filtro es lavable, por lo que solo debes enjuagarlo con agua y dejarlo secar para mantenerlo a punto.`
+      },
+      {
+        question: `¿Cuánta autonomía tiene la batería del ${name}?`,
+        answer: `La batería del ${name} está optimizada para cubrir tus sesiones de limpieza habituales. Se recarga rápidamente vía USB, por lo que siempre lo tendrás listo para la siguiente limpieza.`
+      },
+      {
+        question: `¿Qué diferencia al ${name} de otros modelos del mercado?`,
+        answer: `Su combinación de potencia de succión, portabilidad y accesorios incluidos lo hacen un equipo 3 en 1 sin rival en su rango de precio. No pagas por tecnología que no necesitas, sino por la que sí te soluciona el día a día.`
+      },
+      {
+        question: `¿Hace mucho ruido el ${name} en funcionamiento?`,
+        answer: `Su motor está diseñado para ser eficiente y silencioso comparado con las aspiradoras convencionales, lo que te permite usarlo sin molestar a las personas que descansan en el hogar.`
+      }
+    ],
+    smartwatch: [
+      {
+        question: `¿El ${name} es compatible con mi celular Android o iPhone?`,
+        answer: `Sí, el ${name} es compatible tanto con Android (5.0 en adelante) como con iOS (9.0 en adelante). La conexión se realiza vía Bluetooth de forma rápida y sencilla a través de su app dedicada.`
+      },
+      {
+        question: `¿Qué funciones de salud monitorea el ${name}?`,
+        answer: `El ${name} monitorea en tiempo real tu frecuencia cardíaca, nivel de oxígeno en sangre (SpO2), calidad del sueño y contador de pasos, dándote un panorama completo de tu bienestar cada día.`
+      },
+      {
+        question: `¿El ${name} aguanta el agua y la lluvia?`,
+        answer: `El ${name} cuenta con resistencia al agua para salpicaduras y sudor del día a día. Puedes usarlo sin preocupación en el gimnasio o bajo la lluvia, aunque no está diseñado para natación.`
+      },
+      {
+        question: `¿Cuánto dura la batería del ${name} sin cargarlo?`,
+        answer: `Con un uso normal de notificaciones y monitoreo de salud activo, el ${name} tiene una autonomía de varios días antes de necesitar recarga, superando a muchas marcas reconocidas.`
+      },
+      {
+        question: `¿Puedo recibir notificaciones de WhatsApp y llamadas en el ${name}?`,
+        answer: `¡Claro que sí! El ${name} muestra en pantalla las notificaciones de llamadas, mensajes y aplicaciones como WhatsApp, Instagram y más, para que no pierdas nada importante sin sacar el celular.`
+      }
+    ],
+    masajeador: [
+      {
+        question: `¿El ${name} es seguro para personas con lesiones musculares?`,
+        answer: `El ${name} está diseñado para uso personal de recuperación y relajación. Sin embargo, si tienes una lesión diagnosticada, te recomendamos consultar con tu médico antes de usarlo, como con cualquier dispositivo de terapia.`
+      },
+      {
+        question: `¿En qué zonas del cuerpo puedo usar el ${name}?`,
+        answer: `Puedes usarlo en cuello, hombros, espalda, pantorrillas, pies y brazos. Sus cabezales intercambiables están pensados para adaptarse a cada zona muscular con la presión ideal.`
+      },
+      {
+        question: `¿Cuántos niveles de intensidad tiene el ${name}?`,
+        answer: `El ${name} cuenta con múltiples velocidades de masaje para que puedas comenzar suave y aumentar la intensidad según tus necesidades. Desde una relajación profunda hasta una recuperación post-ejercicio intensa.`
+      },
+      {
+        question: `¿Es silencioso el ${name} para usar en casa u oficina?`,
+        answer: `Sí, su motor de baja vibración está optimizado para operar a niveles de ruido muy bajos, lo que te permite disfrutar de tu sesión de alivio sin interrumpir a nadie a tu alrededor.`
+      },
+      {
+        question: `¿Qué tan rápido se siente el alivio al usar el ${name}?`,
+        answer: `La mayoría de usuarios reportan una reducción notable en la tensión muscular a partir de los primeros 5-10 minutos de uso continuo. Para mejores resultados, se recomienda una sesión diaria de 15 minutos.`
+      }
+    ],
+    humidificador: [
+      {
+        question: `¿Para qué tamaño de habitación es ideal el ${name}?`,
+        answer: `El ${name} está optimizado para habitaciones de entre 15 y 30 metros cuadrados, siendo perfecto para dormitorios, salas pequeñas y oficinas, manteniendo el nivel de humedad ideal de forma constante.`
+      },
+      {
+        question: `¿Qué tipo de agua debo usar en el ${name}?`,
+        answer: `Te recomendamos usar agua fría desmineralizada o filtrada para prolongar la vida útil del dispositivo y evitar la acumulación de cal. Esto también asegura que el vapor emitido sea puro y limpio.`
+      },
+      {
+        question: `¿El ${name} funciona de forma silenciosa durante la noche?`,
+        answer: `¡Sí! El ${name} opera con un nivel de ruido ultra bajo, lo que lo hace ideal para usarlo mientras duermes. No interrumpe el descanso y trabaja silenciosamente toda la noche.`
+      },
+      {
+        question: `¿Cuántas horas de funcionamiento continuo tiene el ${name}?`,
+        answer: `Dependiendo de la configuración de niebla seleccionada, el ${name} puede funcionar de forma continua durante varias horas antes de necesitar recarga de agua, cubriendo toda una noche de sueño.`
+      },
+      {
+        question: `¿El ${name} tiene luz nocturna o función de aromaterapia?`,
+        answer: `El ${name} combina la humidificación con una suave luz ambiental y es compatible con aceites esenciales, transformando cualquier habitación en un verdadero spa de bienestar y relajación.`
+      }
+    ],
+    belleza: [
+      {
+        question: `¿El ${name} daña el cabello o la piel con el uso frecuente?`,
+        answer: `No. El ${name} incorpora tecnología de protección térmica que distribuye el calor de manera uniforme, evitando el sobrecalentamiento y los daños a la fibra capilar. Es seguro para uso diario.`
+      },
+      {
+        question: `¿Cuánto tiempo tarda en calentar el ${name}?`,
+        answer: `El ${name} alcanza su temperatura óptima de trabajo en menos de 60 segundos desde que lo enchufas, ahorrándote un tiempo valioso en tu rutina de belleza matutina.`
+      },
+      {
+        question: `¿El ${name} sirve para todo tipo de cabello?`,
+        answer: `Sí. El ${name} está diseñado para funcionar en cabello lacio, ondulado, rizado y afro, con configuraciones de temperatura ajustables para cada tipo de textura capilar.`
+      },
+      {
+        question: `¿Qué resultados puedo esperar al usar el ${name} regularmente?`,
+        answer: `Con el uso regular del ${name}, notarás un cabello más suave, brillante y con menos frizz. Lograrás acabados de salón profesional en casa en cuestión de minutos, sin gastar dinero en peluquería.`
+      },
+      {
+        question: `¿El ${name} incluye garantía y qué cubre?`,
+        answer: `Sí, el ${name} incluye garantía por defectos de fábrica. Si presentas algún inconveniente desde el primer uso, te lo reemplazamos sin costo adicional. Tu satisfacción está completamente garantizada.`
+      }
+    ]
+  };
+
+  // ─── FEATURE-BASED DYNAMIC QUESTIONS ────────────────────────────────────────
+  const validFeatures = features.filter(f => !/marca|modelo|ean|sku|condición|unidades/i.test(f)).slice(0, 2);
+  const featureFaqs = validFeatures.map(f => {
     const [k, v] = f.split(':').map(s => s.trim());
-    faqs.push({
-      question: `¿Qué especificaciones tiene el ${k} de este ${name}?`,
-      answer: `Este modelo cuenta con un ${k} de ${v || 'alto rendimiento'}, garantizando que el ${name} funcione de manera óptima y duradera bajo cualquier condición.`
-    });
+    return {
+      question: `¿Cuál es el ${k.toLowerCase()} del ${name} y qué beneficio me da?`,
+      answer: `El ${name} cuenta con un ${k.toLowerCase()} de ${v || 'alto rendimiento'}. Esto se traduce en un desempeño superior y más confiable en tu día a día, garantizando que la inversión valga cada peso.`
+    };
   });
 
-  if (faqs.length < 2) {
-    faqs.push({
+  // ─── SELECT CATEGORY BANK ────────────────────────────────────────────────────
+  let bankKey = 'general';
+  if (nameLower.includes('aspiradora') || nameLower.includes('limpieza') || nameLower.includes('polvo')) bankKey = 'aspiradora';
+  else if (nameLower.includes('smartwatch') || nameLower.includes('reloj') || nameLower.includes('t900')) bankKey = 'smartwatch';
+  else if (nameLower.includes('masajeador') || nameLower.includes('masaje')) bankKey = 'masajeador';
+  else if (nameLower.includes('humidificador') || nameLower.includes('difusor') || nameLower.includes('vapor')) bankKey = 'humidificador';
+  else if (/(pelo|cabello|cepillo|secador|plancha|belleza|facial)/i.test(nameLower)) bankKey = 'belleza';
+  else if (category) {
+    const catL = category.toLowerCase();
+    if (catL.includes('limpieza')) bankKey = 'aspiradora';
+    else if (catL.includes('tecnolog')) bankKey = 'smartwatch';
+    else if (catL.includes('salud')) bankKey = 'masajeador';
+    else if (catL.includes('belleza')) bankKey = 'belleza';
+  }
+
+  const categoryBank = CATEGORY_FAQS[bankKey] || [];
+  const genericProductFaqs = [
+    {
       question: `¿Por qué el ${name} es la mejor opción en Colombia?`,
-      answer: `Por su relación costo-beneficio inigualable y su diseño adaptado a las necesidades de nuestros clientes, ofreciendo resultados profesionales sin complicaciones.`
-    });
+      answer: `El ${name} combina tecnología de calidad con un precio accesible para el mercado colombiano. Pago contra entrega y envío gratis a todo el país lo hacen la opción más segura y conveniente para comprar.`
+    },
+    {
+      question: `¿El ${name} es original o de imitación?`,
+      answer: `El ${name} que vendemos en Clickea Tienda es 100% original. Trabajamos directamente con proveedores verificados para garantizar que recibas exactamente el producto que ves en la página, sin sorpresas.`
+    },
+    {
+      question: `¿Qué pasa si el ${name} llega defectuoso?`,
+      answer: `Cubrimos cualquier defecto de fábrica al 100%. Si el ${name} llega dañado o con algún problema desde fábrica, te reemplazamos el producto de inmediato. Tu satisfacción es nuestra prioridad.`
+    }
+  ];
+
+  // ─── ASSEMBLE 5+ FAQS: category-specific + feature-based + generic ──────────
+  const allSpecific = [...categoryBank, ...featureFaqs, ...genericProductFaqs];
+  
+  // Pick at least 5 unique questions
+  for (const faq of allSpecific) {
+    if (faqs.length >= 5) break;
+    faqs.push(faq);
+  }
+
+  // Safety fallback – should never hit this, but just in case
+  if (faqs.length < 3) {
+    faqs.push(...genericProductFaqs.slice(0, 3 - faqs.length));
   }
 
   return faqs;
