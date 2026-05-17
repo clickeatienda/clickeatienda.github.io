@@ -8,7 +8,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
   const [productImageUrls, setProductImageUrls] = useState("");
   const [reviewImageUrls, setReviewImageUrls] = useState("");
   const [featuresImageUrl, setFeaturesImageUrl] = useState("");
-  const [gifUrls, setGifUrls] = useState("");
+  const [gifFiles, setGifFiles] = useState([]);
   const [supplierCost, setSupplierCost] = useState("");
   const [dropiId, setDropiId] = useState("");
   const [category, setCategory] = useState("Tecnología");
@@ -20,6 +20,13 @@ export default function ImportProductModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
+  const fileToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve({ name: file.name, data: reader.result.split(',')[1] });
+    reader.onerror = error => reject(error);
+  });
+
   async function handleStartImport(e) {
     e.preventDefault();
     if (!productName || !supplierCost || !productImageUrls) {
@@ -29,10 +36,20 @@ export default function ImportProductModal({ isOpen, onClose }) {
 
     setStep('processing');
     setProgress(10);
-    setStatusMessage("Enviando a la cola de investigación...");
+    setStatusMessage("Procesando archivos...");
     setError("");
 
     try {
+      const base64Gifs = [];
+      for (const file of gifFiles) {
+        if (file) {
+          const b64 = await fileToBase64(file);
+          base64Gifs.push(b64);
+        }
+      }
+
+      setStatusMessage("Enviando a la cola de investigación...");
+      
       const res = await fetch('/api/products/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -42,7 +59,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
           productImageUrls: productImageUrls.split('\n').map(u => u.trim()).filter(Boolean),
           reviewImageUrls: reviewImageUrls.split('\n').map(u => u.trim()).filter(Boolean),
           featuresImageUrl: featuresImageUrl.trim(),
-          gifUrls: gifUrls.split('\n').map(u => u.trim()).filter(Boolean),
+          gifFilesBase64: base64Gifs,
           supplierCost: parseFloat(supplierCost),
           category
         })
@@ -86,7 +103,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
     setProductImageUrls("");
     setReviewImageUrls("");
     setFeaturesImageUrl("");
-    setGifUrls("");
+    setGifFiles([]);
     setSupplierCost("");
     onClose();
   };
@@ -146,15 +163,24 @@ export default function ImportProductModal({ isOpen, onClose }) {
               </div>
 
               <div className="form-group" style={{ background: '#fffbeb', padding: '10px', borderRadius: '8px', border: '1px solid #f59e0b', marginTop: '10px' }}>
-                <label style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '5px' }}><Video size={16}/> URLs de GIFs Personalizados (Opcional)</label>
-                <textarea 
-                  value={gifUrls} 
-                  onChange={e => setGifUrls(e.target.value)} 
-                  placeholder="El 1ro reemplaza el carrusel automático en Detalles del Producto. El 2do va debajo de las reseñas." 
-                  rows="2"
-                  className="modal-textarea"
+                <label style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '5px' }}><Video size={16}/> Subir GIFs Personalizados (Opcional, Máx 2)</label>
+                <input 
+                  type="file"
+                  accept="image/gif"
+                  multiple
+                  onChange={e => {
+                     const files = Array.from(e.target.files).slice(0, 2);
+                     setGifFiles(files);
+                  }}
+                  className="modal-input-special"
                   style={{ borderColor: 'rgba(245, 158, 11, 0.3)' }}
                 />
+                {gifFiles.length > 0 && (
+                  <p style={{ fontSize: '11px', color: '#f59e0b', marginTop: '5px', fontWeight: 'bold' }}>
+                    Seleccionados: {gifFiles.map(f => f.name).join(', ')}
+                  </p>
+                )}
+                <p style={{ fontSize: '11px', color: '#64748b', marginTop: '5px' }}>El 1ro reemplaza el carrusel automático en Detalles del Producto. El 2do va debajo de las reseñas.</p>
               </div>
 
               <div className="form-row">

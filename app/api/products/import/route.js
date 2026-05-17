@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { uploadToShopifyAssets } from '../../../lib/shopify-image-uploader.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,10 +13,24 @@ export async function POST(request) {
   }
 
   const supabase = createClient(supabaseUrl, supabaseKey);
-  const { productName, dropiId, productImageUrls, reviewImageUrls, featuresImageUrl, gifUrls, supplierCost, category } = await request.json();
+  const { productName, dropiId, productImageUrls, reviewImageUrls, featuresImageUrl, gifFilesBase64, supplierCost, category } = await request.json();
 
   if (!productName || !supplierCost) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  }
+
+  // Upload Base64 GIFs to Shopify CDN
+  const uploadedGifUrls = [];
+  if (gifFilesBase64 && gifFilesBase64.length > 0) {
+    const safeName = productName.replace(/[^a-z0-9]/gi, '-').toLowerCase().substring(0, 20);
+    for (let i = 0; i < gifFilesBase64.length; i++) {
+      const fileObj = gifFilesBase64[i];
+      if (fileObj && fileObj.data) {
+        const uniqueName = `custom-${safeName}-${Date.now().toString().slice(-5)}-${i}.gif`;
+        const cdnUrl = await uploadToShopifyAssets(uniqueName, fileObj.data);
+        if (cdnUrl) uploadedGifUrls.push(cdnUrl);
+      }
+    }
   }
 
   // Upsert the product record (update if dropi_id exists, otherwise insert)
@@ -30,7 +45,7 @@ export async function POST(request) {
     research_data: { 
       manualReviewImages: reviewImageUrls || [],
       manualFeaturesImage: featuresImageUrl || null,
-      manualGifs: gifUrls || []
+      manualGifs: uploadedGifUrls
     },
     import_status: 'pending_research',
     status_message: 'Esperando al investigador local...',
