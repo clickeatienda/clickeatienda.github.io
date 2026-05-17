@@ -111,16 +111,11 @@ function buildPaymentSecuritySeals(scopeId) {
 /**
  * Social Proof Badges - Compact single line
  */
-function buildSocialProofCompact(scopeId) {
-  const baseViewers = Math.floor(Math.random() * (450 - 280) + 280);
-  const baseSold = Math.floor(Math.random() * (95 - 45) + 45);
-  const rating = (Math.random() * (5.0 - 4.8) + 4.8).toFixed(1);
-
+function buildSocialProofCompact(scopeId, baseViewers, baseSold) {
   return `
     <div class="${scopeId}-social-row">
-      <div class="${scopeId}-social-item">👁️ <span id="${scopeId}-viewers">${baseViewers}</span> personas viendo ahora</div>
-      <div class="${scopeId}-social-item">🛒 <span id="${scopeId}-sold">${baseSold}</span> vendidos hoy</div>
-      <div class="${scopeId}-social-item">⭐ ${rating} valoración</div>
+      <div class="${scopeId}-social-item">👁️ <span id="${scopeId}-viewers">${baseViewers}</span> viendo</div>
+      <div class="${scopeId}-social-item">🛒 <span id="${scopeId}-sold">${baseSold}</span> vendidos</div>
     </div>
     <script>
       (function(){
@@ -310,6 +305,10 @@ export function generateLanding(research, globalIcons = {}) {
   const carousel = buildCarousel(research.images, research.name, scopeId);
   const specificFaqs = getProductFaqs(research.name, research.features);
 
+  const baseViewers = Math.floor(Math.random() * (450 - 280) + 280);
+  const baseSold = Math.floor(Math.random() * (95 - 45) + 45);
+  const rating = (Math.random() * (5.0 - 4.8) + 4.8).toFixed(1);
+
   return `
 <style>
   #${scopeId} { font-family: 'Inter', sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; background: #fff; line-height: 1.5; }
@@ -318,8 +317,8 @@ export function generateLanding(research, globalIcons = {}) {
   .${scopeId}-trust-icon-bg { width: 50px; height: 50px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: 1px solid #f1f5f9; }
   .${scopeId}-trust-col svg { width: 24px; height: 24px; }
   
-  .${scopeId}-social-row { display: flex; justify-content: center; gap: 6px; font-size: 9px; color: #64748b; margin: 12px 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; flex-wrap: wrap; }
-  .${scopeId}-social-item { background: #f0fdf4; color: #166534; padding: 4px 8px; border-radius: 20px; display: inline-flex; align-items: center; gap: 3px; border: 1px solid #dcfce7; white-space: nowrap; font-size: 9px; }
+  .${scopeId}-social-row { display: flex; justify-content: center; gap: 8px; font-size: 10px; color: #166534; margin: 12px 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
+  .${scopeId}-social-item { flex: 1; text-align: center; justify-content: center; background: #f0fdf4; padding: 6px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #dcfce7; white-space: nowrap; }
   .${scopeId}-section-title { font-size: 22px; font-weight: 900; color: #0f172a; text-align: center; margin-bottom: 20px; letter-spacing: -0.5px; }
   .${scopeId}-feature-list { list-style: none; padding: 0; margin: 15px 0; border-top: 1px solid #f1f5f9; }
   .${scopeId}-feature-list li { padding: 4px 0; border-bottom: 1px solid #f8fafc; font-size: 13px; color: #64748b; line-height: 1.2; display: flex; align-items: flex-start; }
@@ -350,7 +349,7 @@ export function generateLanding(research, globalIcons = {}) {
   </div>
 
   <!-- ORDER: SOCIAL PROOF FIRST -->
-  ${buildSocialProofCompact(scopeId)}
+  ${buildSocialProofCompact(scopeId, baseViewers, baseSold)}
 
   <!-- PAIN POINT SECTION (DYNAMIC & SPECIFIC) -->
   <div style="padding: 30px 20px; background: #fef2f2; border-radius: 20px; margin: 25px 15px; border: 1px dashed #fca5a5;">
@@ -365,7 +364,11 @@ export function generateLanding(research, globalIcons = {}) {
 
   <!-- SOCIAL VALIDATION COLLAGE (PRODUCT SPECIFIC) -->
   <div style="padding: 15px 0;">
-    <h2 style="font-size: 17px; font-weight: 800; color: #0f172a; text-align: center; margin-bottom: 10px;">Lo que dicen nuestros clientes</h2>
+    <h2 style="font-size: 17px; font-weight: 800; color: #0f172a; text-align: center; margin-bottom: 5px;">Lo que dicen nuestros clientes</h2>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 15px; font-size: 13px; font-weight: 700; color: #475569;">
+      <span style="color: #fbbf24; font-size: 14px;">⭐⭐⭐⭐⭐</span>
+      <span>${rating} / 5.0 Valoración</span>
+    </div>
     ${buildRealReviewsWall(research, scopeId)}
   </div>
 
