@@ -318,25 +318,25 @@ export function generateLanding(research, globalIcons = {}) {
   .${scopeId}-trust-icon-bg { width: 50px; height: 50px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: 1px solid #f1f5f9; }
   .${scopeId}-trust-col svg { width: 24px; height: 24px; }
   
-  .${scopeId}-social-row { display: flex; justify-content: center; gap: 8px; font-size: 10px; color: #64748b; margin: 15px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-  .${scopeId}-social-item { background: #f0fdf4; color: #166534; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px; border: 1px solid #dcfce7; }
+  .${scopeId}-social-row { display: flex; justify-content: center; gap: 6px; font-size: 9px; color: #64748b; margin: 12px 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; flex-wrap: wrap; }
+  .${scopeId}-social-item { background: #f0fdf4; color: #166534; padding: 4px 8px; border-radius: 20px; display: inline-flex; align-items: center; gap: 3px; border: 1px solid #dcfce7; white-space: nowrap; font-size: 9px; }
   .${scopeId}-section-title { font-size: 22px; font-weight: 900; color: #0f172a; text-align: center; margin-bottom: 20px; letter-spacing: -0.5px; }
   .${scopeId}-feature-list { list-style: none; padding: 0; margin: 15px 0; border-top: 1px solid #f1f5f9; }
   .${scopeId}-feature-list li { padding: 4px 0; border-bottom: 1px solid #f8fafc; font-size: 13px; color: #64748b; line-height: 1.2; display: flex; align-items: flex-start; }
   .${scopeId}-feature-list li strong { color: #334155; text-transform: uppercase; font-size: 11px; letter-spacing: 0.3px; flex-shrink: 0; width: 100px; margin-right: 10px; }
   .${scopeId}-feature-list li span { flex: 1; }
   
-  .${scopeId}-reviews-wall { display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-  .${scopeId}-review-card { flex: 0 0 240px; background: #fff; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.05); scroll-snap-align: start; display: flex; flex-direction: column; overflow: hidden; }
-  .${scopeId}-review-header { padding: 10px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f8fafc; }
-  .${scopeId}-review-user strong { display: block; font-size: 13px; color: #1e293b; }
-  .${scopeId}-review-user span { font-size: 10px; color: #10b981; font-weight: 700; }
-  .${scopeId}-review-stars { font-size: 10px; }
-  .${scopeId}-review-image { width: 100%; aspect-ratio: 1/1; overflow: hidden; }
+  .${scopeId}-reviews-wall { display: flex; gap: 10px; overflow-x: auto; padding: 5px 5px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .${scopeId}-review-card { flex: 0 0 170px; background: #fff; border-radius: 10px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.04); scroll-snap-align: start; display: flex; flex-direction: column; overflow: hidden; }
+  .${scopeId}-review-header { padding: 6px 8px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f8fafc; }
+  .${scopeId}-review-user strong { display: block; font-size: 11px; color: #1e293b; }
+  .${scopeId}-review-user span { font-size: 9px; color: #10b981; font-weight: 700; }
+  .${scopeId}-review-stars { font-size: 9px; }
+  .${scopeId}-review-image { width: 100%; aspect-ratio: 4/3; overflow: hidden; }
   .${scopeId}-review-image img { width: 100%; height: 100%; object-fit: cover; }
-  .${scopeId}-review-footer { padding: 10px; }
-  .${scopeId}-review-footer p { font-size: 12px; color: #475569; margin: 0 0 5px 0; line-height: 1.4; font-style: italic; }
-  .${scopeId}-review-footer span { font-size: 10px; color: #94a3b8; }
+  .${scopeId}-review-footer { padding: 6px 8px; }
+  .${scopeId}-review-footer p { font-size: 11px; color: #475569; margin: 0 0 3px 0; line-height: 1.3; font-style: italic; }
+  .${scopeId}-review-footer span { font-size: 9px; color: #94a3b8; }
   .${scopeId}-reviews-wall::-webkit-scrollbar { display: none; }
   
   ${carousel.css}
@@ -361,12 +361,11 @@ export function generateLanding(research, globalIcons = {}) {
     </div>
   </div>
 
-  <!-- ORDER: TRUST BADGES SECOND -->
-  ${buildTrustBadges(scopeId)}
+
 
   <!-- SOCIAL VALIDATION COLLAGE (PRODUCT SPECIFIC) -->
-  <div style="padding: 30px 0;">
-    <h2 class="${scopeId}-section-title">Lo que dicen nuestros clientes</h2>
+  <div style="padding: 15px 0;">
+    <h2 style="font-size: 17px; font-weight: 800; color: #0f172a; text-align: center; margin-bottom: 10px;">Lo que dicen nuestros clientes</h2>
     ${buildRealReviewsWall(research, scopeId)}
   </div>
 
@@ -397,8 +396,7 @@ export function generateLanding(research, globalIcons = {}) {
   <!-- FEATURES LIST -->
   ${buildFeaturesList(research.features, scopeId)}
 
-  <!-- PAYMENT SECURITY -->
-  ${buildPaymentSecuritySeals(scopeId)}
+
 
   <!-- FAQS -->
   ${getFaqsHtml(specificFaqs)}
