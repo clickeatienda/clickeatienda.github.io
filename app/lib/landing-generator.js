@@ -114,7 +114,7 @@ function buildPaymentSecuritySeals(scopeId) {
 function buildSocialProofCompact(scopeId, baseViewers, baseSold) {
   return `
     <div class="${scopeId}-social-row">
-      <div class="${scopeId}-social-item">👁️ <span id="${scopeId}-viewers">${baseViewers}</span> viendo</div>
+      <div class="${scopeId}-social-item">👁️ <span id="${scopeId}-viewers">${baseViewers}</span> viendo ahora</div>
       <div class="${scopeId}-social-item">🛒 <span id="${scopeId}-sold">${baseSold}</span> vendidos</div>
     </div>
     <script>
