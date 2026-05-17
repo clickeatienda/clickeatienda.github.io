@@ -11,6 +11,13 @@ const sectionContent = `
 
     {% comment %} TITLE {% endcomment %}
     <h1 class="landing-title">{{ product.title }}</h1>
+
+    {% comment %} URGENCY {% endcomment %}
+    {% assign random_units = product.id | modulo: 8 | plus: 4 %}
+    <div class="landing-urgency" style="background: #fff8f8; color: #991b1b; padding: 10px 14px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0 15px 0; font-size: 13px; border: 1px solid #fee2e2; font-weight: 600;">
+      <img src="{{ 'flash_sale_icon.png' | asset_url }}" alt="Oferta Relámpago" style="width: 20px; height: 20px; object-fit: contain; flex-shrink: 0;" />
+      <span><strong>¡Oferta Relámpago!</strong> Solo quedan <span style="color: #ef4444; font-weight: bold;">{{ random_units }} unidades</span> disponibles.</span>
+    </div>
     
     {% comment %} PRICE {% endcomment %}
     <div class="landing-price-box">
@@ -33,13 +40,6 @@ const sectionContent = `
       {% for media in product.media %}
         <img src="{{ media | image_url: width: 800 }}" alt="{{ media.alt | escape }}" style="width: 100%; border-radius: 8px;">
       {% endfor %}
-    </div>
-
-    {% comment %} URGENCY {% endcomment %}
-    {% assign random_units = product.id | modulo: 8 | plus: 4 %}
-    <div class="landing-urgency" style="background: #fff8f8; color: #991b1b; padding: 10px 14px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; margin: 15px 0; font-size: 13px; border: 1px solid #fee2e2; font-weight: 600;">
-      <img src="{{ 'flash_sale_icon.png' | asset_url }}" alt="Oferta Relámpago" style="width: 20px; height: 20px; object-fit: contain; flex-shrink: 0;" />
-      <span><strong>¡Oferta Relámpago!</strong> Solo quedan <span style="color: #ef4444; font-weight: bold;">{{ random_units }} unidades</span> disponibles.</span>
     </div>
 
     {% comment %} TRUST BADGES - COMPACT {% endcomment %}
