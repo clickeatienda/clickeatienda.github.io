@@ -36,23 +36,25 @@ const sectionContent = `
     </div>
 
     {% comment %} URGENCY {% endcomment %}
-    <div class="landing-urgency" style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 6px; text-align: center; margin: 20px 0; font-size: 15px; border: 1px solid #ffeeba;">
-      🔥 <strong>¡Oferta Relámpago!</strong> Solo quedan <span style="color: #d32f2f; font-weight: bold;">7 unidades</span> disponibles.
+    {% assign random_units = product.id | modulo: 8 | plus: 4 %}
+    <div class="landing-urgency" style="background: #fff8f8; color: #991b1b; padding: 10px 14px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; margin: 15px 0; font-size: 13px; border: 1px solid #fee2e2; font-weight: 600;">
+      <img src="{{ 'flash_sale_icon.png' | asset_url }}" alt="Oferta Relámpago" style="width: 20px; height: 20px; object-fit: contain; flex-shrink: 0;" />
+      <span><strong>¡Oferta Relámpago!</strong> Solo quedan <span style="color: #ef4444; font-weight: bold;">{{ random_units }} unidades</span> disponibles.</span>
     </div>
 
     {% comment %} TRUST BADGES - COMPACT {% endcomment %}
     <div style="display: flex; gap: 8px; margin: 15px 0;">
-      <div style="flex: 1; background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 8px; padding: 10px 6px; text-align: center;">
-        <div style="font-size: 18px; margin-bottom: 2px;">✅</div>
-        <div style="font-size: 11px; font-weight: 700; color: #166534; line-height: 1.2;">Pagas al Recibir</div>
+      <div style="flex: 1; background: #fafafa; border: 1px solid #f0f0f0; border-radius: 10px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
+        <img src="{{ 'cod_icon.png' | asset_url }}" alt="Pagas al Recibir" style="width: 24px; height: 24px; object-fit: contain;" />
+        <div style="font-size: 10px; font-weight: 800; color: #475569; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.2px;">Pagas al Recibir</div>
       </div>
-      <div style="flex: 1; background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 8px; padding: 10px 6px; text-align: center;">
-        <div style="font-size: 18px; margin-bottom: 2px;">🚚</div>
-        <div style="font-size: 11px; font-weight: 700; color: #166534; line-height: 1.2;">Envío Gratis</div>
+      <div style="flex: 1; background: #fafafa; border: 1px solid #f0f0f0; border-radius: 10px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
+        <img src="{{ 'shipping_icon.png' | asset_url }}" alt="Envío Gratis" style="width: 24px; height: 24px; object-fit: contain;" />
+        <div style="font-size: 10px; font-weight: 800; color: #475569; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.2px;">Envío Gratis</div>
       </div>
-      <div style="flex: 1; background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 8px; padding: 10px 6px; text-align: center;">
-        <div style="font-size: 18px; margin-bottom: 2px;">🛡️</div>
-        <div style="font-size: 11px; font-weight: 700; color: #166534; line-height: 1.2;">Garantía Total</div>
+      <div style="flex: 1; background: #fafafa; border: 1px solid #f0f0f0; border-radius: 10px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
+        <img src="{{ 'warranty_icon.png' | asset_url }}" alt="Garantía Total" style="width: 24px; height: 24px; object-fit: contain;" />
+        <div style="font-size: 10px; font-weight: 800; color: #475569; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.2px;">Garantía Total</div>
       </div>
     </div>
 
