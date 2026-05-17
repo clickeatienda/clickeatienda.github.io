@@ -36,9 +36,15 @@ async function updateProgress(id, progress, message, status = 'researching') {
 const API_VERSION = '2024-04';
 
 // Use REST API - more stable than GraphQL for product creation
-async function createShopifyProduct(product, pricing, images, description) {
+async function createShopifyProduct(product, pricing, images, description, shopifyId = null) {
+  const method = shopifyId ? 'PUT' : 'POST';
+  const url = shopifyId 
+    ? `https://${SHOPIFY_STORE}/admin/api/${API_VERSION}/products/${shopifyId}.json`
+    : `https://${SHOPIFY_STORE}/admin/api/${API_VERSION}/products.json`;
+
   const body = {
     product: {
+      ...(shopifyId ? { id: shopifyId } : {}),
       title: product.name,
       body_html: description,
       vendor: "Clickea Tienda",
@@ -48,24 +54,21 @@ async function createShopifyProduct(product, pricing, images, description) {
       variants: [{
         price: String(pricing.sellingPrice),
         compare_at_price: pricing.beforePrice ? String(pricing.beforePrice) : null,
-        inventory_management: null,
-        requires_shipping: true,
+        inventory_management: "shopify",
+        sku: product.id ? product.id.slice(0, 8) : undefined
       }],
       images: images ? images.map(src => ({ src })) : [],
     }
   };
 
-  const response = await fetch(
-    `https://${SHOPIFY_STORE}/admin/api/${API_VERSION}/products.json`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Access-Token': SHOPIFY_TOKEN,
-      },
-      body: JSON.stringify(body),
-    }
-  );
+  const response = await fetch(url, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Access-Token': SHOPIFY_TOKEN,
+    },
+    body: JSON.stringify(body),
+  });
 
   const result = await response.json();
   
@@ -114,9 +117,9 @@ async function processProduct(p) {
     const pricing = calculatePrice(p.supplier_cost, DEFAULT_PRICING_CONFIG);
     await updateProgress(id, 75, `Precio: $${pricing.sellingPrice.toLocaleString()} | Margen: ${pricing.actualMargin}%`);
 
-    // STEP 5: Create in Shopify with all images + landing HTML
-    await updateProgress(id, 90, "Publicando en Shopify con galería completa...");
-    const shopifyProduct = await createShopifyProduct(p, pricing, research.images, smartDescription);
+    // STEP 5: Create or Update in Shopify with all images + landing HTML
+    await updateProgress(id, 90, p.shopify_id ? "Actualizando en Shopify..." : "Publicando en Shopify...");
+    const shopifyProduct = await createShopifyProduct(p, pricing, research.images, smartDescription, p.shopify_id);
 
     // STEP 6: Finalize
     await supabase

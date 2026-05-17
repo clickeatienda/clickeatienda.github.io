@@ -1,12 +1,36 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Package, Search, Filter, Edit, Trash2, ExternalLink } from "lucide-react";
+import { Package, Search, Filter, Edit, Trash2, ExternalLink, RefreshCw } from "lucide-react";
 import ImportProductModal from "./ImportProductModal";
 
 export default function ProductsView() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSyncShopify = async () => {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    try {
+      const res = await fetch('/api/products/sync', { method: 'POST' });
+      const json = await res.json();
+      if (json.success) {
+        // Fetch new products from dashboard API
+        const fetchRes = await fetch('/api/dashboard');
+        const fetchJson = await fetchRes.json();
+        setProducts(fetchJson.recentProducts || []);
+        alert(`Sincronización completa. Se eliminaron ${json.deletedCount} producto(s) obsoleto(s) de la base de datos.`);
+      } else {
+        alert(`Error al sincronizar: ${json.error || 'Error desconocido'}`);
+      }
+    } catch (err) {
+      console.error("Error syncing Shopify catalog:", err);
+      alert("Error al intentar conectar con el servidor de sincronización.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchProducts() {
@@ -42,6 +66,14 @@ export default function ProductsView() {
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
              <button className="btn" style={{ padding: '6px 12px', background: 'var(--bg-tertiary)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}><Filter size={14}/> Filtrar</button>
+             <button 
+               className="btn" 
+               style={{ padding: '6px 12px', background: 'var(--bg-tertiary)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 6, cursor: isSyncing ? 'not-allowed' : 'pointer', opacity: isSyncing ? 0.7 : 1 }}
+               onClick={handleSyncShopify}
+               disabled={isSyncing}
+             >
+               <RefreshCw size={14} className={isSyncing ? "animate-spin" : ""} /> {isSyncing ? "Sincronizando..." : "Sincronizar Shopify"}
+             </button>
              <button 
                className="btn" 
                style={{ padding: '6px 12px', background: 'var(--brand-primary)', border: 'none', borderRadius: 6, color: 'white', cursor: 'pointer' }}

@@ -10,8 +10,14 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
+    "axios": "^1.16.0",
+    "dotenv": "^17.4.2",
     "lucide-react": "^1.14.0",
     "next": "16.2.6",
+    "playwright": "^1.59.1",
+    "playwright-extra": "^4.3.6",
+    "puppeteer": "^24.43.0",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.8.1"

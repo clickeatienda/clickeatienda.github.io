@@ -10,6 +10,27 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleHeaderSync = async () => {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    try {
+      const res = await fetch('/api/products/sync', { method: 'POST' });
+      const json = await res.json();
+      if (json.success) {
+        alert(`Sincronización completa. Se eliminaron ${json.deletedCount} producto(s) obsoleto(s) de la base de datos.`);
+        window.location.reload();
+      } else {
+        alert(`Error al sincronizar: ${json.error || 'Error desconocido'}`);
+      }
+    } catch (err) {
+      console.error("Error syncing Shopify catalog:", err);
+      alert("Error al intentar conectar con el servidor de sincronización.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   useEffect(() => {
     const update = () => {
@@ -89,7 +110,15 @@ export default function Home() {
           </div>
           <div className="main-header-right">
             <span className="header-time">🇨🇴 COL {currentTime}</span>
-            <button className="header-btn" title="Sincronizar"><RefreshCw size={16} /></button>
+            <button 
+              className="header-btn" 
+              title="Sincronizar"
+              onClick={handleHeaderSync}
+              disabled={isSyncing}
+              style={{ cursor: isSyncing ? 'not-allowed' : 'pointer', opacity: isSyncing ? 0.7 : 1 }}
+            >
+              <RefreshCw size={16} className={isSyncing ? "animate-spin" : ""} />
+            </button>
             <button className="header-btn" title="Notificaciones"><Bell size={16} /></button>
             <button className="header-btn" title="Configuración"><Settings size={16} /></button>
           </div>

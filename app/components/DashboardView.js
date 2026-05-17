@@ -10,6 +10,7 @@ import ImportProductModal from "./ImportProductModal";
 
 export default function DashboardView({ onNavigate }) {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [data, setData] = useState({
     stats: {
       ventasHoy: 0, productsActive: 0, visitasHoy: 0,
@@ -20,6 +21,29 @@ export default function DashboardView({ onNavigate }) {
     timeline: [],
     loading: true
   });
+
+  const handleSyncShopify = async () => {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    try {
+      const res = await fetch('/api/products/sync', { method: 'POST' });
+      const json = await res.json();
+      if (json.success) {
+        // Fetch new dashboard data to reload stats & products list!
+        const fetchRes = await fetch('/api/dashboard');
+        const fetchJson = await fetchRes.json();
+        setData(prev => ({ ...fetchJson, loading: false }));
+        alert(`Sincronización completa. Se eliminaron ${json.deletedCount} producto(s) obsoleto(s) de la base de datos.`);
+      } else {
+        alert(`Error al sincronizar: ${json.error || 'Error desconocido'}`);
+      }
+    } catch (err) {
+      console.error("Error syncing Shopify catalog:", err);
+      alert("Error al intentar conectar con el servidor de sincronización.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -140,9 +164,13 @@ export default function DashboardView({ onNavigate }) {
                 <BarChart3 size={24} />
                 Ver Analytics
               </div>
-              <div className="action-btn">
-                <RefreshCw size={24} />
-                Sincronizar Dropi
+              <div 
+                className="action-btn" 
+                onClick={handleSyncShopify}
+                style={{ cursor: isSyncing ? 'not-allowed' : 'pointer', opacity: isSyncing ? 0.7 : 1 }}
+              >
+                <RefreshCw size={24} className={isSyncing ? "animate-spin" : ""} />
+                {isSyncing ? "Sincronizando..." : "Sincronizar Shopify"}
               </div>
             </div>
           </div>
