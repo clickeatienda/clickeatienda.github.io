@@ -7,7 +7,7 @@ function uid() {
 /**
  * AliExpress/Temu Style Real Reviews Wall
  */
-function buildRealReviewsWall(research, scopeId) {
+function buildRealReviewsWall(research, scopeId, baseSold) {
   const images = research.images || [];
   const reviewImagesData = research.reviewImages || [];
   const reviewCommentsData = research.reviewComments || [];
@@ -99,7 +99,7 @@ function buildRealReviewsWall(research, scopeId) {
     </div>
 
     <div style="text-align:center; margin-top:15px; font-size:13px; color:#10b981; font-weight:700; text-transform:uppercase; letter-spacing:1px;">
-      ✅ +2,480 clientes satisfechos en Colombia
+      ✅ +<span id="${scopeId}-satisfied-count">${baseSold}</span> clientes satisfechos en Colombia
     </div>
   `;
 }
@@ -162,6 +162,10 @@ function buildSocialProofCompact(scopeId, baseViewers, baseSold) {
       (function(){
         const vEl = document.getElementById('${scopeId}-viewers');
         const sEl = document.getElementById('${scopeId}-sold');
+        const syncSat = (val) => {
+          const satEl = document.getElementById('${scopeId}-satisfied-count');
+          if(satEl) satEl.innerText = val;
+        };
         if(vEl) {
           setInterval(() => {
             const current = parseInt(vEl.innerText);
@@ -170,9 +174,14 @@ function buildSocialProofCompact(scopeId, baseViewers, baseSold) {
           }, 3000);
         }
         if(sEl) {
+          syncSat(sEl.innerText);
           setInterval(() => {
             const current = parseInt(sEl.innerText);
-            if(Math.random() > 0.8) sEl.innerText = current + 1;
+            if(Math.random() > 0.8) {
+              const newVal = current + 1;
+              sEl.innerText = newVal;
+              syncSat(newVal);
+            }
           }, 10000);
         }
       })();
@@ -403,7 +412,7 @@ export function generateLanding(research, globalIcons = {}) {
       <span style="color: #fbbf24; font-size: 14px;">⭐⭐⭐⭐⭐</span>
       <span>${rating} / 5.0 Valoración</span>
     </div>
-    ${buildRealReviewsWall(research, scopeId)}
+    ${buildRealReviewsWall(research, scopeId, baseSold)}
   </div>
 
   <!-- BENEFITS LIST (CREATIVE & LONG) -->
