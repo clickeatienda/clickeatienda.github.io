@@ -14,8 +14,8 @@ const sectionContent = `
 
     {% comment %} URGENCY {% endcomment %}
     {% assign random_units = product.id | modulo: 8 | plus: 4 %}
-    <div class="landing-urgency" style="background: #fff8f8; color: #991b1b; padding: 10px 14px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0 15px 0; font-size: 13px; border: 1px solid #fee2e2; font-weight: 600;">
-      <img src="{{ 'flash_sale_icon.png' | asset_url }}" alt="Oferta Relámpago" style="width: 20px; height: 20px; object-fit: contain; flex-shrink: 0;" />
+    <div class="landing-urgency" style="background: #fff8f8; color: #991b1b; padding: 10px 14px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0 15px 0; font-size: 13px; border: 1px solid #fee2e2; font-weight: 600;">
+      <img src="{{ 'flash_sale_icon.png' | asset_url }}" alt="Oferta Relámpago" style="width: 28px; height: 28px; object-fit: contain; flex-shrink: 0; mix-blend-mode: multiply;" />
       <span><strong>¡Oferta Relámpago!</strong> Solo quedan <span style="color: #ef4444; font-weight: bold;">{{ random_units }} unidades</span> disponibles.</span>
     </div>
     
