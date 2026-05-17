@@ -139,75 +139,117 @@ export function getSalesCopy(productName, features = [], category = 'general') {
 export function getCreativeBenefits(productName, features = []) {
   const nameLower = productName.toLowerCase();
   
-  // 1. Get Emotional/Problem-Solving Benefits (from Dictionary)
-  let emotional = EMOTIONAL_BENEFITS.general;
-  if (nameLower.includes('humidificador')) emotional = EMOTIONAL_BENEFITS.humidificador;
-  if (nameLower.includes('masajeador')) emotional = EMOTIONAL_BENEFITS.masajeador;
-  if (/(pelo|cabello|cepillo|secador|belleza|facial)/i.test(nameLower)) emotional = EMOTIONAL_BENEFITS.belleza;
-  
-  // 2. Get Feature-Based Benefits
-  const validFeatures = features.filter(f => {
+  // 1. Scan and parse features into keys and values
+  const validFeatures = (features || []).filter(f => {
     const l = f.toLowerCase();
     return !l.includes('marca') && !l.includes('modelo') && !l.includes('ean') && !l.includes('sku') && !l.includes('condición') && !l.includes('unidades');
   });
 
-  const benefitTemplates = {
-    'material': (val) => {
-      const sVal = sanitizeVal(val, 'alta calidad');
-      return `💎 **Resistencia Superior:** Fabricado con ${sVal}, este producto está diseñado para soportar el uso más intenso sin perder su elegancia.`;
-    },
-    'batería': (val) => {
-      const sVal = sanitizeVal(val, 'larga duración');
-      return `🔋 **Energía que no te Abandona:** Con su sistema de ${sVal}, tendrás potencia suficiente para todas tus jornadas.`;
-    },
-    'capacidad': (val) => `📦 **Espacio sin Límites:** Su generosa capacidad de ${val} te permite gestionar todo lo que necesitas sin complicaciones.`,
-    'diseño': (val) => {
-      const sVal = sanitizeVal(val, 'ergonómico');
-      return `🎨 **Ergonomía y Confort:** El diseño enfocado en ${sVal} se adapta perfectamente a ti, reduciendo la fatiga diaria.`;
-    },
-    'potencia': (val) => `⚡ **Rendimiento Pro:** La potencia de ${val} te permite obtener resultados impecables en la mitad del tiempo.`,
-    'tecnología': (val) => `🚀 **Innovación Real:** Equipado con tecnología de vanguardia, este dispositivo automatiza lo difícil por ti.`,
-    'seguridad': (val) => `🛡️ **Protección Total:** Gracias a su sistema de seguridad integral, puedes usarlo con total confianza y tranquilidad.`,
-    'luz': (val) => {
-      const sVal = sanitizeVal(val, 'tecnología LED');
-      return `💡 **Ambiente y Claridad:** Con su iluminación de ${sVal}, transforma cualquier espacio oscuro en un lugar acogedor.`;
+  const parsedFeatures = {};
+  for (const f of validFeatures) {
+    const parts = f.split(':');
+    if (parts.length >= 2) {
+      const k = parts[0].trim().toLowerCase();
+      const v = parts.slice(1).join(':').trim();
+      parsedFeatures[k] = v;
     }
+  }
+
+  // 2. Identify the core specification/feature categories present
+  const hasFeature = (keyword) => {
+    return Object.keys(parsedFeatures).some(k => {
+      if (keyword.length <= 2) {
+        const words = k.split(/[\s_/:-]+/);
+        return words.includes(keyword);
+      }
+      return k.includes(keyword);
+    });
+  };
+  const getFeatureVal = (keyword, fallback) => {
+    const key = Object.keys(parsedFeatures).find(k => {
+      if (keyword.length <= 2) {
+        const words = k.split(/[\s_/:-]+/);
+        return words.includes(keyword);
+      }
+      return k.includes(keyword);
+    });
+    return key ? parsedFeatures[key] : fallback;
   };
 
-  const featureBenefits = [];
-  const processedKeys = new Set();
+  // 3. Define the AIDA sequence
+  const benefits = [];
 
-  for (const f of validFeatures) {
-    const [key, val] = f.split(':').map(s => s.trim());
-    const lowerKey = key.toLowerCase();
-    const templateKey = Object.keys(benefitTemplates).find(tk => lowerKey.includes(tk));
-    
-    if (templateKey && !processedKeys.has(templateKey)) {
-      const benefit = benefitTemplates[templateKey](val || key);
-      if (benefit) {
-        featureBenefits.push(benefit);
-        processedKeys.add(templateKey);
-      }
-    }
-    if (featureBenefits.length >= 2) break;
+  // --- STEP 1: A - ATENCIÓN / DOLOR ---
+  let step1Title = "🔴 Adiós a la Limpieza Frustrante";
+  let step1Desc = "Limpiar rincones difíciles, rieles o el auto ya no será una tarea agotadora.";
+  
+  if (nameLower.includes('humidificador') || hasFeature('vapor') || hasFeature('capacidad')) {
+    step1Title = "🔴 Despídete del Aire Seco";
+    step1Desc = "Evita levantarte con la garganta reseca o congestión a mitad de la noche.";
+  } else if (nameLower.includes('masajeador') || hasFeature('masaje') || hasFeature('dolor') || hasFeature('velocidad')) {
+    step1Title = "🔴 Dile Adiós al Dolor Muscular";
+    step1Desc = "Libérate de la tensión acumulada y el estrés corporal del día de forma inmediata.";
+  } else if (/(pelo|cabello|cepillo|secador|belleza|facial)/i.test(nameLower)) {
+    step1Title = "🔴 Adiós al Cabello Dañado";
+    step1Desc = "Olvídate de gastar una fortuna en salones para lucir un look impecable.";
+  } else if (nameLower.includes('reloj') || nameLower.includes('smartwatch') || hasFeature('pantalla')) {
+    step1Title = "🔴 Control Total en tu Muñeca";
+    step1Desc = "No vuelvas a perder llamadas ni notificaciones importantes en tu día a día.";
   }
+  benefits.push(`✅ **${step1Title}:** ${step1Desc}`);
 
-  // Combine: 2 Emotional + all Feature-based
-  const finalBenefits = [
-    ...emotional.slice(0, 1), // Only 1 general/emotional
-    ...featureBenefits
-  ];
+  // --- STEP 2: I - INTERÉS / SOLUCIÓN TÉCNICA ---
+  let step2Title = "⚡ Potencia y Succión Eficiente";
+  let step2Desc = "Su motor de alto rendimiento arranca el polvo más difícil en segundos.";
 
-  // If we still have few benefits, create custom ones from generic features
-  if (finalBenefits.length < 4) {
-    const remainingFeatures = validFeatures.filter(f => !processedKeys.has(f.split(':')[0].toLowerCase())).slice(0, 3);
-    for (const rf of remainingFeatures) {
-      const [k, v] = rf.split(':').map(s => s.trim());
-      finalBenefits.push(`✅ **${k}:** Aprovecha al máximo su ${k} de ${v || 'alto nivel'}, pensado para optimizar cada momento de uso.`);
-    }
+  if (hasFeature('succión') || hasFeature('succion') || hasFeature('pa')) {
+    const succ = getFeatureVal('succión', getFeatureVal('succion', getFeatureVal('pa', 'alta')));
+    step2Title = `⚡ Succión de ${succ}`;
+    step2Desc = `Arranca el polvo invisible y pelos de mascotas incrustados en una sola pasada.`;
+  } else if (hasFeature('batería') || hasFeature('bateria') || hasFeature('mah')) {
+    const bat = getFeatureVal('batería', getFeatureVal('bateria', getFeatureVal('mah', 'larga duración')));
+    step2Title = `🔋 Batería de ${bat}`;
+    step2Desc = `Disfruta de una autonomía constante para completar tus rutinas sin interrupciones.`;
+  } else if (hasFeature('potencia') || hasFeature('w') || hasFeature('watts')) {
+    const pot = getFeatureVal('potencia', getFeatureVal('w', getFeatureVal('watts', 'alto rendimiento')));
+    step2Title = `⚡ Potencia Pro de ${pot}`;
+    step2Desc = `Obtén resultados impecables en la mitad del tiempo gracias a su motor reforzado.`;
+  } else if (hasFeature('capacidad') || hasFeature('litros') || hasFeature('ml')) {
+    const cap = getFeatureVal('capacidad', getFeatureVal('litros', getFeatureVal('ml', 'gran tamaño')));
+    step2Title = `📦 Capacidad de ${cap}`;
+    step2Desc = `Su amplio depósito te permite completar tus tareas sin necesidad de vaciados constantes.`;
+  } else if (hasFeature('material') || hasFeature('resistencia')) {
+    const mat = getFeatureVal('material', getFeatureVal('resistencia', 'alta durabilidad'));
+    step2Title = `💎 Material de ${mat}`;
+    step2Desc = `Estructura ultra-resistente diseñada para soportar el uso diario más exigente.`;
   }
+  benefits.push(`✅ **${step2Title}:** ${step2Desc}`);
 
-  return finalBenefits.slice(0, 5); // Max 5 benefits
+  // --- STEP 3: D - DESEO / TRANSFORMACIÓN ---
+  let step3Title = "✨ Hogar y Auto Impecables";
+  let step3Desc = "Disfruta de espacios 100% higiénicos y recupera tu valioso tiempo libre.";
+
+  if (nameLower.includes('humidificador') || nameLower.includes('difusor')) {
+    step3Title = "✨ Descanso Profundo y Reparador";
+    step3Desc = "Crea un oasis de bienestar en tu habitación para dormir mejor toda la noche.";
+  } else if (nameLower.includes('masajeador') || nameLower.includes('terapia')) {
+    step3Title = "✨ Bienestar y Alivio Inmediato";
+    step3Desc = "Disfruta de una sesión de spa profesional en casa y renueva tus energías.";
+  } else if (/(pelo|cabello|cepillo|secador|belleza|facial)/i.test(nameLower)) {
+    step3Title = "✨ Cabello Radiante y Saludable";
+    step3Desc = "Luce un peinado perfecto, sedoso y lleno de brillo con mínimo esfuerzo.";
+  } else if (nameLower.includes('reloj') || nameLower.includes('smartwatch') || nameLower.includes('audifonos')) {
+    step3Title = "✨ Estilo de Vida Inteligente";
+    step3Desc = "Lleva un registro preciso de tu salud y mantente conectado con elegancia.";
+  }
+  benefits.push(`✅ **${step3Title}:** ${step3Desc}`);
+
+  // --- STEP 4: A - ACCIÓN / CONFIANZA ---
+  const step4Title = "🛡️ Compra 100% Cero Riesgo";
+  const step4Desc = "Ordena hoy con envío gratis a toda Colombia y paga en efectivo al recibir en tu puerta.";
+  benefits.push(`✅ **${step4Title}:** ${step4Desc}`);
+
+  return benefits; // Max 5 benefits
 }
 
 export function getProductFaqs(name, features = []) {
