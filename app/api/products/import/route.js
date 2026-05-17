@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-import { uploadToShopifyAssets } from '../../../lib/shopify-image-uploader.js';
+import { uploadToShopifyAssets } from '@/app/lib/shopify-image-uploader.js';
 
 export const dynamic = 'force-dynamic';
 
