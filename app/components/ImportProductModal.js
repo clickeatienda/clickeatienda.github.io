@@ -8,6 +8,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
   const [productImageUrls, setProductImageUrls] = useState("");
   const [reviewImageUrls, setReviewImageUrls] = useState("");
   const [featuresImageUrl, setFeaturesImageUrl] = useState("");
+  const [gifUrls, setGifUrls] = useState("");
   const [supplierCost, setSupplierCost] = useState("");
   const [dropiId, setDropiId] = useState("");
   const [category, setCategory] = useState("Tecnología");
@@ -41,6 +42,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
           productImageUrls: productImageUrls.split('\n').map(u => u.trim()).filter(Boolean),
           reviewImageUrls: reviewImageUrls.split('\n').map(u => u.trim()).filter(Boolean),
           featuresImageUrl: featuresImageUrl.trim(),
+          gifUrls: gifUrls.split('\n').map(u => u.trim()).filter(Boolean),
           supplierCost: parseFloat(supplierCost),
           category
         })
@@ -84,6 +86,7 @@ export default function ImportProductModal({ isOpen, onClose }) {
     setProductImageUrls("");
     setReviewImageUrls("");
     setFeaturesImageUrl("");
+    setGifUrls("");
     setSupplierCost("");
     onClose();
   };
@@ -139,6 +142,18 @@ export default function ImportProductModal({ isOpen, onClose }) {
                   onChange={e => setFeaturesImageUrl(e.target.value)} 
                   placeholder="Si ya tienes una foto con textos técnicos, pégala aquí..." 
                   className="modal-input-special"
+                />
+              </div>
+
+              <div className="form-group" style={{ background: '#fffbeb', padding: '10px', borderRadius: '8px', border: '1px solid #f59e0b', marginTop: '10px' }}>
+                <label style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '5px' }}><Video size={16}/> URLs de GIFs Personalizados (Opcional)</label>
+                <textarea 
+                  value={gifUrls} 
+                  onChange={e => setGifUrls(e.target.value)} 
+                  placeholder="El 1ro reemplaza el carrusel automático en Detalles del Producto. El 2do va debajo de las reseñas." 
+                  rows="2"
+                  className="modal-textarea"
+                  style={{ borderColor: 'rgba(245, 158, 11, 0.3)' }}
                 />
               </div>
 

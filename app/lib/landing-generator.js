@@ -286,11 +286,11 @@ function buildAnatomicalHighlight(research, scopeId) {
 
   return `
     <style>
-      .${scopeId}-anatomy-container { position: relative; width: 100%; max-width: 400px; margin: 0 auto; aspect-ratio: 1/1; }
+      .${scopeId}-anatomy-container { position: relative; width: 100%; max-width: 400px; margin: 0 auto; aspect-ratio: 1/1; z-index: 1; }
       .${scopeId}-anatomy-img { width: 100%; height: 100%; object-fit: contain; }
-      .${scopeId}-anatomy-dot { position: absolute; width: 12px; height: 12px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 4px rgba(16,185,129,0.3); z-index: 10; }
-      .${scopeId}-anatomy-label { position: absolute; background: white; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; color: #1e293b; box-shadow: 0 4px 10px rgba(0,0,0,0.1); white-space: nowrap; z-index: 20; border: 2px solid #10b981; }
-      .${scopeId}-anatomy-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+      .${scopeId}-anatomy-dot { position: absolute; width: 12px; height: 12px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 4px rgba(16,185,129,0.3); z-index: 3; }
+      .${scopeId}-anatomy-label { position: absolute; background: white; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; color: #1e293b; box-shadow: 0 4px 10px rgba(0,0,0,0.1); white-space: nowrap; z-index: 4; border: 2px solid #10b981; }
+      .${scopeId}-anatomy-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
       
       /* Position 1: Top Left */
       .${scopeId}-dot-1 { top: 30%; left: 35%; }
@@ -352,7 +352,17 @@ export function generateLanding(research, globalIcons = {}) {
   const scopeId = uid();
   const copy = getSalesCopy(research.name, research.features, research.category);
   const benefits = getCreativeBenefits(research.name, research.features);
-  const carousel = buildCarousel(research.images, research.name, scopeId);
+  
+  const manualGifs = research.manualGifs || [];
+  const gif1 = manualGifs.length > 0 ? manualGifs[0] : null;
+  const gif2 = manualGifs.length > 1 ? manualGifs[1] : null;
+
+  const topVisualHTML = gif1 
+    ? `<div style="width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); background: #f8fafc;"><img src="${gif1}" alt="${research.name}" style="width: 100%; height: auto; display: block; object-fit: contain;"></div>`
+    : buildCarousel(research.images, research.name, scopeId).html;
+    
+  const carouselCss = gif1 ? '' : buildCarousel(research.images, research.name, scopeId).css;
+
   const specificFaqs = getProductFaqs(research.name, research.features);
 
   const baseViewers = Math.floor(Math.random() * (450 - 280) + 280);
@@ -367,8 +377,8 @@ export function generateLanding(research, globalIcons = {}) {
   .${scopeId}-trust-icon-bg { width: 50px; height: 50px; background: #f8fafc; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; border: 1px solid #f1f5f9; }
   .${scopeId}-trust-col svg { width: 24px; height: 24px; }
   
-  .${scopeId}-social-row { display: flex; justify-content: center; gap: 8px; font-size: 10px; color: #166534; margin: 12px 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
-  .${scopeId}-social-item { flex: 1; text-align: center; justify-content: center; background: #f0fdf4; padding: 6px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #dcfce7; white-space: nowrap; }
+  .${scopeId}-social-row { display: flex; justify-content: center; gap: 8px; font-size: 10px; color: #4A9EFF; margin: 12px 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
+  .${scopeId}-social-item { flex: 1; text-align: center; justify-content: center; background: rgba(74, 158, 255, 0.1); padding: 6px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(74, 158, 255, 0.2); white-space: nowrap; }
   .${scopeId}-section-title { font-size: 22px; font-weight: 900; color: #0f172a; text-align: center; margin-bottom: 20px; letter-spacing: -0.5px; }
   .${scopeId}-feature-list { list-style: none; padding: 0; margin: 15px 0; border-top: 1px solid #f1f5f9; }
   .${scopeId}-feature-list li { padding: 4px 0; border-bottom: 1px solid #f8fafc; font-size: 13px; color: #64748b; line-height: 1.2; display: flex; align-items: flex-start; }
@@ -379,18 +389,18 @@ export function generateLanding(research, globalIcons = {}) {
   .${scopeId}-review-card { flex: 0 0 210px; background: #fff; border-radius: 10px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.04); scroll-snap-align: start; display: flex; flex-direction: column; overflow: hidden; }
   .${scopeId}-review-header { padding: 6px 8px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f8fafc; }
   .${scopeId}-review-user strong { display: block; font-size: 11px; color: #1e293b; }
-  .${scopeId}-review-user span { font-size: 9px; color: #10b981; font-weight: 700; }
+  .${scopeId}-review-user span { font-size: 9px; color: #4A9EFF; font-weight: 700; }
   .${scopeId}-review-stars { font-size: 9px; }
   .${scopeId}-reviews-wall::-webkit-scrollbar { display: none; }
   
-  ${carousel.css}
+  ${carouselCss}
 </style>
 
 <div id="${scopeId}">
   <!-- TITLE & CAROUSEL -->
   <div style="padding: 25px 20px;">
     <h1 style="font-size: 26px; font-weight: 900; text-align: center; margin-bottom: 25px; line-height:1.2; color:#0f172a;">${research.name}</h1>
-    ${carousel.html}
+    ${topVisualHTML}
   </div>
 
   <!-- ORDER: SOCIAL PROOF FIRST -->
@@ -413,11 +423,19 @@ export function generateLanding(research, globalIcons = {}) {
       <span>${rating} / 5.0 Valoración</span>
     </div>
     ${buildRealReviewsWall(research, scopeId, baseSold)}
+    
+    ${gif2 ? `
+    <div style="padding: 25px 15px 5px 15px;">
+      <div style="width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.12); border: 1px solid #f1f5f9;">
+        <img src="${gif2}" alt="Demostración en uso" style="width: 100%; height: auto; display: block; object-fit: contain;" />
+      </div>
+    </div>
+    ` : ''}
   </div>
 
   <!-- BENEFITS LIST (CREATIVE & LONG) -->
-  <div style="padding: 35px 20px; background: #0f172a; color: white; border-radius: 24px; margin: 25px 15px;">
-    <h2 style="font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 20px; text-align:center;">¿Por qué elegir el ${research.name}?</h2>
+  <div style="padding: 25px 15px; margin: 25px 15px;">
+    <h2 style="font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 20px; text-align:center;">¿Por qué elegir el ${research.name}?</h2>
     <div style="display: flex; flex-direction: column; gap: 20px;">
       ${benefits.map(b => {
         const parts = b.split('**');
@@ -427,8 +445,8 @@ export function generateLanding(research, globalIcons = {}) {
           <div style="display:flex; gap:15px; align-items:flex-start;">
             <div style="font-size:24px;">✅</div>
             <div>
-              <p style="font-size:16px; font-weight:800; margin:0 0 5px 0; color:#10b981;">${title}</p>
-              <p style="font-size:14px; color:#cbd5e1; margin:0; line-height:1.5;">${desc}</p>
+              <p style="font-size:16px; font-weight:800; margin:0 0 5px 0; color:#4A9EFF;">${title}</p>
+              <p style="font-size:14px; color:#1e293b; margin:0; line-height:1.5;">${desc}</p>
             </div>
           </div>
         `;
