@@ -11,52 +11,93 @@ function buildRealReviewsWall(research, scopeId) {
   const images = research.images || [];
   const reviewImagesData = research.reviewImages || [];
   const reviewCommentsData = research.reviewComments || [];
-  
-  if (images.length < 2 && reviewImagesData.length === 0) return '';
 
-  const names = ['Juan P.', 'María L.', 'Carlos R.', 'Elena M.', 'Andrés G.', 'Sandra V.', 'Ricardo T.', 'Paola C.'];
-  const dates = ['Hace 2 días', 'Hace 5 días', 'Ayer', 'La semana pasada', 'Hace 3 días'];
+  const names = [
+    'Juan P.', 'María L.', 'Carlos R.', 'Elena M.', 'Andrés G.', 'Sandra V.', 'Ricardo T.', 'Paola C.',
+    'David S.', 'Patricia M.', 'Fernando B.', 'Laura G.', 'Gabriel A.', 'Diana P.', 'José L.', 'Isabel R.',
+    'Héctor F.', 'Camila N.', 'Javier M.', 'Natalia G.'
+  ];
+  const dates = ['Hace 2 días', 'Hace 5 días', 'Ayer', 'La semana pasada', 'Hace 3 días', 'Hace 4 días', 'Hace 6 días'];
   const defaultComments = [
     "Excelente producto, llegó muy rápido y funciona tal cual la descripción. Súper recomendado.",
     "Me encantó, la calidad es mucho mejor de lo que esperaba por el precio. Muy feliz con mi compra.",
     "Llegó en perfecto estado a Medellín. El vendedor estuvo muy pendiente. 5 estrellas.",
     "Funciona perfecto, muy útil y práctico. Lo volvería a comprar sin duda.",
-    "Muy buen empaque y el producto se siente de muy buena calidad. Gracias!"
+    "Muy buen empaque y el producto se siente de muy buena calidad. Gracias!",
+    "La relación calidad-precio es insuperable. Llevo usándolo una semana y va excelente.",
+    "Superó mis expectativas. El envío fue muy rápido y la atención excelente.",
+    "Llegó rapidísimo a Bogotá. La caja un poco golpeada pero el producto intacto y funcionando al 100%.",
+    "Muy práctico para el día a día. Lo recomiendo totalmente para regalo.",
+    "Excelente servicio, llegó antes de lo esperado. Muy contento con la compra."
   ];
-  
-  // Prioritize REAL buyer review photos from ML. Fallback to the end of the main gallery (lifestyle shots).
-  const reviewImages = reviewImagesData.length > 0 
-    ? reviewImagesData.slice(0, 8) 
+
+  // 1. Determine images list (cap review images to 17 max to ensure we always have reviews without images within the 20 max limit)
+  const reviewImagesRaw = reviewImagesData.length > 0 
+    ? reviewImagesData 
     : (images.length > 5 ? images.slice(-4) : images.slice(1, 4));
 
-  const reviewComments = reviewCommentsData.length > 0
-    ? reviewCommentsData.slice(0, reviewImages.length)
-    : Array(reviewImages.length).fill(null).map((_, i) => defaultComments[i % defaultComments.length]);
+  const reviewImages = reviewImagesRaw.slice(0, 17);
+  const numImages = reviewImages.length;
+
+  // 2. Determine total reviews count (random between absoluteMin+3 and 20)
+  const minTotal = Math.max(10, numImages + 3);
+  const finalMin = Math.min(20, minTotal);
+  const totalReviewsCount = finalMin === 20 
+    ? 20 
+    : Math.floor(Math.random() * (20 - finalMin + 1)) + finalMin;
+
+  // 3. Construct review data objects
+  const reviews = Array.from({ length: totalReviewsCount }).map((_, i) => {
+    // If we have an image for this index, use it. Otherwise, no image.
+    const src = i < numImages ? reviewImages[i] : null;
+    
+    // Use matching comment or fallback to default
+    let comment = '';
+    if (i < numImages && reviewCommentsData[i]) {
+      comment = reviewCommentsData[i];
+    } else {
+      comment = defaultComments[i % defaultComments.length];
+    }
+    
+    const name = names[i % names.length];
+    const date = dates[i % dates.length];
+    const rating = i % 4 === 0 ? '⭐⭐⭐⭐' : '⭐⭐⭐⭐⭐';
+    
+    return { name, date, rating, src, comment };
+  });
 
   return `
     <div class="${scopeId}-reviews-wall">
-      ${reviewImages.map((src, i) => {
-        const rating = i % 3 === 0 ? '⭐⭐⭐⭐' : '⭐⭐⭐⭐⭐';
+      ${reviews.map((rev, i) => {
         return `
           <div class="${scopeId}-review-card">
             <div class="${scopeId}-review-header">
               <div class="${scopeId}-review-user">
-                <strong>${names[i % names.length]}</strong>
+                <strong>${rev.name}</strong>
                 <span>Compra Verificada</span>
               </div>
-              <div class="${scopeId}-review-stars">${rating}</div>
+              <div class="${scopeId}-review-stars">${rev.rating}</div>
             </div>
-            <div class="${scopeId}-review-image">
-              <img src="${src}" alt="Reseña real">
-            </div>
-            <div class="${scopeId}-review-footer">
-              <p>"${reviewComments[i]}"</p>
-              <span>${dates[i % dates.length]}</span>
+            
+            <div style="display: flex; gap: 8px; padding: 8px; align-items: flex-start; flex: 1;">
+              <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                <p style="font-size: 11px; color: #475569; margin: 0 0 4px 0; line-height: 1.3; font-style: italic;">"${rev.comment}"</p>
+                <span style="font-size: 9px; color: #94a3b8; font-weight: 500;">${rev.date}</span>
+              </div>
+              ${rev.src ? `
+                <img src="${rev.src}" alt="Reseña real" style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid #e2e8f0; flex-shrink: 0; transition: transform 0.2s;" onclick="const l=document.getElementById('${scopeId}-lightbox'); const li=document.getElementById('${scopeId}-lightbox-img'); if(l && li){ li.src=this.src; l.style.display='flex'; }" />
+              ` : ''}
             </div>
           </div>
         `;
       }).join('')}
     </div>
+
+    <!-- Lightbox Modal Overlay -->
+    <div id="${scopeId}-lightbox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:99999; align-items:center; justify-content:center; cursor:pointer;" onclick="this.style.display='none'">
+      <img id="${scopeId}-lightbox-img" style="max-width:90%; max-height:90%; border-radius:12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: scale(1); transition: transform 0.2s ease-in-out;" />
+    </div>
+
     <div style="text-align:center; margin-top:15px; font-size:13px; color:#10b981; font-weight:700; text-transform:uppercase; letter-spacing:1px;">
       ✅ +2,480 clientes satisfechos en Colombia
     </div>
@@ -326,16 +367,11 @@ export function generateLanding(research, globalIcons = {}) {
   .${scopeId}-feature-list li span { flex: 1; }
   
   .${scopeId}-reviews-wall { display: flex; gap: 10px; overflow-x: auto; padding: 5px 5px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-  .${scopeId}-review-card { flex: 0 0 170px; background: #fff; border-radius: 10px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.04); scroll-snap-align: start; display: flex; flex-direction: column; overflow: hidden; }
+  .${scopeId}-review-card { flex: 0 0 210px; background: #fff; border-radius: 10px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.04); scroll-snap-align: start; display: flex; flex-direction: column; overflow: hidden; }
   .${scopeId}-review-header { padding: 6px 8px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f8fafc; }
   .${scopeId}-review-user strong { display: block; font-size: 11px; color: #1e293b; }
   .${scopeId}-review-user span { font-size: 9px; color: #10b981; font-weight: 700; }
   .${scopeId}-review-stars { font-size: 9px; }
-  .${scopeId}-review-image { width: 100%; aspect-ratio: 4/3; overflow: hidden; }
-  .${scopeId}-review-image img { width: 100%; height: 100%; object-fit: cover; }
-  .${scopeId}-review-footer { padding: 6px 8px; }
-  .${scopeId}-review-footer p { font-size: 11px; color: #475569; margin: 0 0 3px 0; line-height: 1.3; font-style: italic; }
-  .${scopeId}-review-footer span { font-size: 9px; color: #94a3b8; }
   .${scopeId}-reviews-wall::-webkit-scrollbar { display: none; }
   
   ${carousel.css}
