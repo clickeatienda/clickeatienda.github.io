@@ -60,7 +60,8 @@ export async function GET() {
   // Count real products for "Products Active" stat
   const { count: realProductsCount } = await supabase
     .from('products')
-    .select('*', { count: 'exact', head: true });
+    .select('*', { count: 'exact', head: true })
+    .eq('is_active', true);
 
   return NextResponse.json({
     stats: {

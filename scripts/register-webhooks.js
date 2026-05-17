@@ -6,6 +6,8 @@
    Usage: node scripts/register-webhooks.js
    ============================================ */
 
+require('dotenv').config({ path: '.env.local' });
+
 const SHOPIFY_STORE = process.env.SHOPIFY_STORE;
 const SHOPIFY_TOKEN = process.env.SHOPIFY_ACCESS_TOKEN;
 const DASHBOARD_URL = 'https://clickeatienda-github-io.vercel.app';

@@ -93,19 +93,51 @@ export async function POST(request) {
 
   // ---- HANDLE DELETE ----
   if (topic === 'products/delete') {
-    await supabase
+    // 1. Get the product id matching this shopify_id
+    const { data: prod } = await supabase
       .from('products')
-      .update({ is_active: false })
-      .eq('shopify_id', shopifyId);
+      .select('id, name')
+      .eq('shopify_id', shopifyId)
+      .maybeSingle();
 
-    await supabase.from('activity_log').insert({
-      action: `Producto eliminado de Shopify: ${shopifyProduct.title || shopifyId}`,
-      details: `Shopify ID: ${shopifyId}`,
-      category: 'product',
-    });
+    if (prod) {
+      // Step A: Delete referencing orders
+      const { error: orderError } = await supabase
+        .from('orders')
+        .delete()
+        .eq('product_id', prod.id);
+      if (orderError) console.warn('      ⚠️ Advertencia borrando pedidos:', orderError.message);
 
-    console.log(`   🗑️ Product deactivated: ${shopifyId}`);
-    return NextResponse.json({ status: 'deleted', shopify_id: shopifyId });
+      // Step B: Delete referencing social media content
+      const { error: socialError } = await supabase
+        .from('social_content')
+        .delete()
+        .eq('product_id', prod.id);
+      if (socialError) console.warn('      ⚠️ Advertencia borrando contenido social:', socialError.message);
+
+      // Step C: Delete product from the products table
+      const { error: deleteError } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', prod.id);
+
+      if (deleteError) {
+        console.error('❌ Error eliminando producto de la base de datos:', deleteError.message);
+        return NextResponse.json({ error: `Error eliminando producto: ${deleteError.message}` }, { status: 500 });
+      }
+
+      await supabase.from('activity_log').insert({
+        action: `Producto eliminado de Shopify: ${prod.name || shopifyId}`,
+        details: `Shopify ID: ${shopifyId} (removido completamente de la base de datos)`,
+        category: 'product',
+      });
+
+      console.log(`   🗑️ Product completely deleted: ${shopifyId}`);
+      return NextResponse.json({ status: 'deleted_permanently', shopify_id: shopifyId });
+    } else {
+      console.log(`   ❓ Product not found for deletion in DB: ${shopifyId}`);
+      return NextResponse.json({ status: 'not_found', shopify_id: shopifyId });
+    }
   }
 
   // ---- HANDLE CREATE / UPDATE ----
