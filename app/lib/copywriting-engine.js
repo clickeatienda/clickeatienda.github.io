@@ -77,7 +77,7 @@ const EMOTIONAL_BENEFITS = {
 const GENERAL_FAQS = [
   {
     question: '¿Es seguro comprar en esta página?',
-    answer: '¡Absolutamente! Contamos con pago contra entrega. Es decir, tú pagas en efectivo SOLAMENTE cuando tienes el producto en tus manos. Cero riesgos.',
+    answer: '¡Absolutamente! Contamos con pago contra entrega. Es decir, tú pagas en efectivo SOLAMENTE cuando tienes el producto en tus manos. Cero riesgos para ti.',
   },
   {
     question: '¿Cuánto tarda en llegar mi pedido?',
@@ -86,6 +86,26 @@ const GENERAL_FAQS = [
   {
     question: '¿El producto tiene garantía?',
     answer: 'Sí, todos nuestros productos cuentan con garantía directa por defectos de fábrica. Queremos que estés 100% satisfecho con tu compra.',
+  },
+  {
+    question: '¿Puedo rastrear mi pedido después de comprarlo?',
+    answer: 'Sí. Una vez despachado tu pedido, te compartimos el número de guía para que puedas rastrear tu envío en tiempo real directamente en el sitio web de la transportadora asignada.',
+  },
+  {
+    question: '¿Hacen envíos a todo Colombia, incluyendo municipios pequeños?',
+    answer: '¡Sí! Llegamos a cualquier rincón del país. Trabajamos con varias transportadoras para garantizar cobertura en ciudades principales, municipios y zonas rurales de toda Colombia.',
+  },
+  {
+    question: '¿Qué pasa si decido no recibir el pedido o me arrepiento?',
+    answer: 'Sin problema. Si decides no recibir el pedido en el momento de la entrega, simplemente no lo aceptas y no pagas nada. Al ser pago contra entrega, no existe ningún cargo previo ni penalidad.',
+  },
+  {
+    question: '¿Puedo pedir más de una unidad o hacer un pedido al por mayor?',
+    answer: 'Claro que sí. Si deseas pedir varias unidades, escríbenos directamente por WhatsApp o déjalo en las notas de tu pedido y te damos una atención personalizada con los mejores precios.',
+  },
+  {
+    question: '¿Qué hago si tengo un problema con mi pedido después de recibirlo?',
+    answer: 'Contáctanos de inmediato por nuestros canales de atención al cliente. Estamos disponibles para resolver cualquier inconveniente postventa, ya sea un defecto de fábrica, un envío incorrecto o cualquier otra situación.',
   },
 ];
 
