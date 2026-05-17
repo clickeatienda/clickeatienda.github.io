@@ -352,12 +352,10 @@ export function generateLanding(research, globalIcons = {}) {
   ${buildSocialProofCompact(scopeId, baseViewers, baseSold)}
 
   <!-- PAIN POINT SECTION (DYNAMIC & SPECIFIC) -->
-  <div style="padding: 30px 20px; background: #fef2f2; border-radius: 20px; margin: 25px 15px; border: 1px dashed #fca5a5;">
-    <h2 style="font-size: 20px; font-weight: 900; color: #991b1b; margin-bottom: 12px; line-height:1.3;">${copy.hook}</h2>
-    <p style="font-size: 15px; color: #7f1d1d; line-height: 1.6;">${copy.pain}</p>
-    <div style="margin-top:20px; padding:15px; background:white; border-radius:12px; border-left: 5px solid #ef4444;">
-       <p style="font-size: 14px; color: #1e293b; margin:0;">${copy.solution}</p>
-    </div>
+  <div style="padding: 25px 20px; margin: 20px 15px; text-align: center;">
+    <h2 style="font-size: 22px; font-weight: 900; color: #0f172a; margin: 0 auto 14px auto; line-height: 1.3; max-width: 480px;">${copy.hook}</h2>
+    <p style="font-size: 15px; color: #334155; line-height: 1.6; margin: 0 auto 18px auto; max-width: 480px;">${copy.pain}</p>
+    <p style="font-size: 15px; color: #0f172a; font-weight: 700; line-height: 1.6; margin: 0 auto; max-width: 480px;">${copy.solution}</p>
   </div>
 
 
