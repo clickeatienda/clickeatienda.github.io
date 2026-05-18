@@ -122,7 +122,23 @@ export default function ProductsView() {
                   <td>
                     <div style={{ display: 'flex', gap: 8, color: 'var(--text-secondary)' }}>
                        <Edit size={16} style={{cursor: 'pointer'}} />
-                       <ExternalLink size={16} style={{cursor: 'pointer'}} />
+                       {p.shopify_url ? (
+                         <a
+                           href={p.shopify_url}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           title="Ver página de venta"
+                           style={{ color: 'var(--brand-primary)', display: 'flex', alignItems: 'center' }}
+                         >
+                           <ExternalLink size={16} style={{cursor: 'pointer'}} />
+                         </a>
+                       ) : (
+                         <ExternalLink
+                           size={16}
+                           title="La landing aún no fue generada"
+                           style={{cursor: 'not-allowed', opacity: 0.3}}
+                         />
+                       )}
                     </div>
                   </td>
                 </tr>

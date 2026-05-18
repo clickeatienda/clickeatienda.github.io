@@ -39,7 +39,7 @@ export async function GET() {
   // Fetch recent products
   const { data: products } = await supabase
     .from('products')
-    .select('id, dropi_id, name, category, supplier_cost, selling_price, before_price, discount_percent, images, is_active, stock')
+    .select('id, dropi_id, name, category, supplier_cost, selling_price, before_price, discount_percent, images, is_active, stock, shopify_url')
     .order('created_at', { ascending: false })
     .limit(50);
 
